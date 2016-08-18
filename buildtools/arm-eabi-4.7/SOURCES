@@ -1,0 +1,50 @@
+Using built-in specs.
+COLLECT_GCC=/tmp/android-eabi-4.7-2012-12-03/toolchains/arm-eabi-4.7/prebuilt/linux-x86_64//bin/arm-eabi-gcc
+COLLECT_LTO_WRAPPER=/tmp/android-eabi-4.7-2012-12-03/toolchains/arm-eabi-4.7/prebuilt/linux-x86_64/bin/../libexec/gcc/arm-eabi/4.7/lto-wrapper
+Target: arm-eabi
+Configured with: /tmp/AOSP-toolchain/build/../gcc/gcc-4.7/configure --prefix=/tmp/toolchain-build-eabi/prefix --target=arm-eabi --host=x86_64-linux-gnu --build=x86_64-linux-gnu --with-gnu-as --with-gnu-ld --enable-languages=c,c++ --with-gmp=/tmp/toolchain-build-eabi/temp-install --with-mpfr=/tmp/toolchain-build-eabi/temp-install --with-mpc=/tmp/toolchain-build-eabi/temp-install --without-ppl --without-cloog --disable-libssp --enable-threads --disable-nls --disable-libmudflap --disable-libgomp --disable-libstdc__-v3 --disable-sjlj-exceptions --disable-shared --disable-tls --disable-libitm --with-float=soft --with-fpu=vfp --with-arch=armv5te --enable-target-optspace --with-abi=aapcs --enable-initfini-array --disable-nls --prefix=/tmp/toolchain-build-eabi/prefix --with-sysroot=/tmp/toolchain-build-eabi/prefix/sysroot --with-binutils-version=2.22 --with-mpfr-version=2.4.1 --with-mpc-version=0.8.1 --with-gmp-version=5.0.5 --with-gcc-version=4.7 --with-gdb-version=7.3.x --with-gxx-include-dir=/tmp/toolchain-build-eabi/prefix/include/c++/4.7 --with-bugurl=http://source.android.com/source/report-bugs.html --disable-bootstrap --disable-libquadmath --disable-plugin --with-arch=armv5te --disable-gold --program-transform-name='s&^&arm-eabi-&'
+Thread model: single
+gcc version 4.7 (GCC) 
+
+gcc:
+commit 978fb74a5c086cc5572dc2e3f37d207acad969d7
+Author: Ben Cheng <bccheng@google.com>
+
+    Enable armv7/thumb2 multilib for arm-eabi.
+
+binutils:
+commit dc51c7a5e0e2620dc85e6c9c46027dce94a85e1f
+Author: Pavel Chupin <pavel.v.chupin@intel.com>
+
+    Fix gold issue on fsck_msdos build when objects built by ICC
+
+gdb:
+commit 5b9104eb197d16b82cd5a50bf7fe8f721607faeb
+Author: Pavel Chupin <pavel.v.chupin@intel.com>
+
+    Fix build with --enable-plugins
+
+gmp:
+commit e6b9669dafc6a5f83c80b4b4176359b78bccdc90
+Author: David 'Digit' Turner <digit@google.com>
+
+    Add gmp-5.0.5.tar.bz2
+
+mpfr:
+commit bde731396c38c8d5b0bca800aace6a690d0d2978
+Author: Jing Yu <jingyu@google.com>
+
+    add mpfr-2.4.2.tar.bz2
+
+build:
+commit 106603b925b7f20177c5b7613535d9d43ed35b7d
+Author: Andrew Hsieh <andrewhsieh@google.com>
+
+    Options brought in from core combo for IA
+
+expat:
+commit 40172a0ae9d40a068f1e1a48ffcf6a1ccf765ed5
+Author: Jing Yu <jingyu@google.com>
+
+    expat package for building gdb-7.3
+
