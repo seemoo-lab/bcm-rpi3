@@ -1,0 +1,7 @@
+.*
+*.o
+!/.gitignore
+Module.symvers
+brcmfmac.ko
+bcmdhd.mod.c
+modules.order
