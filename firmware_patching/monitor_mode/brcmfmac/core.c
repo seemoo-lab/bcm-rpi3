@@ -17,6 +17,8 @@
 #include <linux/kernel.h>
 #include <linux/etherdevice.h>
 #include <linux/module.h>
+/* NEXMON */
+#include <linux/if_arp.h>
 #include <net/cfg80211.h>
 #include <net/rtnetlink.h>
 #include <brcmu_utils.h>
@@ -701,6 +703,9 @@ int brcmf_net_attach(struct brcmf_if *ifp, bool rtnl_locked)
 
 	drvr->rxsz = ndev->mtu + ndev->hard_header_len +
 			      drvr->hdrlen;
+
+    /* NEXMON */
+    ndev->type = ARPHRD_IEEE80211;
 
 	/* set the mac address */
 	memcpy(ndev->dev_addr, ifp->mac_addr, ETH_ALEN);
