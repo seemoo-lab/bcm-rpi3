@@ -3,5 +3,5 @@
 !/.gitignore
 Module.symvers
 brcmfmac.ko
-bcmdhd.mod.c
+brcmfmac.mod.c
 modules.order

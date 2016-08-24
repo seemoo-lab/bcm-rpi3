@@ -3,7 +3,10 @@ FUNCTIONS = wlc_bmac_recv_hook
 #FUNCTIONS = dngl_sendpkt_hook
 FUNCTIONS_BIN = $(FUNCTIONS:=.bin)
 
-all: brcmfmac43430-sdio.bin
+all: brcmfmac/brcmfmac.ko brcmfmac43430-sdio.bin
+
+brcmfmac/brcmfmac.ko: check-nexmon-setup-env
+	make -C ../../kernel/ M=$$PWD/brcmfmac -j2
 
 brcmfmac43430-sdio.bin: patcher.py patch.elf text.bin $(FUNCTIONS_BIN)
 	./patcher.py
@@ -38,5 +41,6 @@ endif
 
 clean:
 	rm -f brcmfmac43430-sdio.bin fw_bcmdhd.complete.bin patch.o patch.elf text.bin $(FUNCTIONS_BIN)
+	make -C ../../kernel/ M=$$PWD/brcmfmac clean
 
 FORCE:
