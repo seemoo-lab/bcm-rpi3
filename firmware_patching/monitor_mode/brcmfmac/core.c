@@ -36,6 +36,8 @@
 #include "proto.h"
 #include "pcie.h"
 #include "common.h"
+/* NEXMON */
+#include "nexmon_procfs.h"
 
 MODULE_AUTHOR("Broadcom Corporation");
 MODULE_DESCRIPTION("Broadcom 802.11 wireless LAN fullmac driver.");
@@ -1239,6 +1241,10 @@ static int __init brcmfmac_module_init(void)
 #ifdef CONFIG_BRCMFMAC_SDIO
 	brcmf_sdio_init();
 #endif
+    
+    /* NEXMON procfs */
+    proc_create("nexmon_consoledump", 0, NULL, &rom_proc_dump_fops);
+
 	if (!schedule_work(&brcmf_driver_work))
 		return -EBUSY;
 
@@ -1248,6 +1254,9 @@ static int __init brcmfmac_module_init(void)
 static void __exit brcmfmac_module_exit(void)
 {
 	cancel_work_sync(&brcmf_driver_work);
+
+    /* NEXMON procfs */
+    remove_proc_entry("nexmon_consoledump", NULL);
 
 #ifdef CONFIG_BRCMFMAC_SDIO
 	brcmf_sdio_exit();
