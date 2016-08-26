@@ -21,9 +21,15 @@ def getSectionAddr(name):
 patch_firmware("brcmfmac43430-sdio.orig.bin", 
     "brcmfmac43430-sdio.bin", [
 	# The text section is always required and contains code that is called by patches and hooks but not directly placed to predefined memory locations
-	#ExternalArmPatch(getSectionAddr(".text"), "text.bin"),
+	ExternalArmPatch(getSectionAddr(".text"), "text.bin"),
 
-	#ExternalArmPatch(getSectionAddr(".text.wlc_bmac_recv_hook"), "wlc_bmac_recv_hook.bin"),
+	ExternalArmPatch(getSectionAddr(".text.wlc_bmac_recv_hook"), "wlc_bmac_recv_hook.bin"),
+
+	#ExternalArmPatch(getSectionAddr(".text.wlc_recv_hook"), "wlc_recv_hook.bin"),
+        #BLPatch(0x1C00E, getSectionAddr(".text.wlc_recv_hook")),
+
+	#ExternalArmPatch(getSectionAddr(".text.wlc_recv_hook_rom"), "wlc_recv_hook_rom.bin"),
+        #GenericPatch4(0x62C, getSectionAddr(".text.wlc_recv_hook_rom")),
 
 	#ExternalArmPatch(getSectionAddr(".text.dngl_sendpkt_hook"), "dngl_sendpkt_hook.bin"),
         #GenericPatch4(0x4A4, getSectionAddr(".text.dngl_sendpkt_hook") + 1),

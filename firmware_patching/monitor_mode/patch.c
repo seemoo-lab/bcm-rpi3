@@ -50,61 +50,73 @@
 #include "../include/bcm43438.h"
 #include "../include/wrapper.h"	// wrapper definitions for functions that already exist in the firmware
 #include "../include/structs.h"	// structures that are used by the code in the firmware
-//#include "../include/helper.h"	// useful helper functions
+#include "../include/helper.h"	// useful helper functions
 
-/*
-signed int
-dngl_sendpkt_hook(int sdio, int frame, int chan) {
-    int *sdio_addr = (int *) 0xa0;
-    *sdio_addr = (int) sdio;
-    return dngl_sendpkt(sdio, frame, chan);
+struct brcmf_proto_bcdc_header {
+	unsigned char flags;
+	unsigned char priority;
+	unsigned char flags2;
+	unsigned char data_offset;
+};
+
+void *
+skb_push(sk_buff *p, unsigned int len) {
+    p->data -= len;
+    p->len += len;
+
+    return p->data;
 }
-*/
+
+void *
+skb_pull(sk_buff *p, unsigned int len) {
+    p->data += len;
+    p->len -= len;
+
+    return p->data;
+}
 
 int
 wlc_bmac_recv_hook(struct wlc_hw_info *wlc_hw, unsigned int fifo, int bound, int *processed_frame_cnt) {
     struct wlc_pub *pub = wlc_hw->wlc->pub;
     sk_buff *p;
-    sk_buff *head = 0;
-    sk_buff *tail = 0;
+    struct brcmf_proto_bcdc_header *frame;
     int n = 0;
-    int mpc = 0;
     int bound_limit = bound ? pub->tunables->rxbnd : -1;
 
-    while((p == dma_rx(wlc_hw->di[fifo]))) {
-		wlc_bmac_mctrl(wlc_hw, 
-            MCTL_PROMISC | 
-            MCTL_KEEPBADFCS | 
-            MCTL_KEEPCONTROL | 
-            MCTL_BCNS_PROMISC, 
-            MCTL_PROMISC | 
-            //MCTL_KEEPBADFCS | 
-            MCTL_KEEPCONTROL | 
-            MCTL_BCNS_PROMISC);
-        if(!tail) {
-            head = tail = p;
-        } else { 
-            tail->prev = p;
-            tail = p;
+    do {
+        p = dma_rx (wlc_hw->di[fifo]);
+        if(!p) {
+            goto LEAVE;
         }
 
-        dma_rxfill(wlc_hw->di[fifo]);
+        //TODO: check wlc_rxhdr->rxhdr.RxStatus1
+        skb_pull(p, 44);
 
-        while((p = head)) {
-            head = head->prev;
-            p->prev = 0;
+		skb_push(p, sizeof(struct brcmf_proto_bcdc_header));
 
-            dngl_sendpkt(SDIO_INFO_ADDR, p, 2);
-        }
+        frame = (struct brcmf_proto_bcdc_header *) p->data;
+        frame->flags = 0x20;
+        frame->priority = 0;
+        frame->flags2 = 0;
+        frame->data_offset = 0;
 
-        wlc_iovar_op(wlc_hw->wlc, "mpc", 0, 0, &mpc, 4, 1, 0);
+        dngl_sendpkt(SDIO_INFO_ADDR, p, 2);
 
-        if(++n >= bound_limit) {
-            break;
-        }
-    }
+    } while(n < bound_limit);
+
+LEAVE:
+    dma_rxfill(wlc_hw->di[fifo]);
 
     *processed_frame_cnt += n;
+    
+    if(n < bound_limit) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
-    return n >= bound_limit;
+void
+dummy_0F0(void) {
+    ;
 }

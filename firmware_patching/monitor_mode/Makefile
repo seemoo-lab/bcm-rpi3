@@ -1,6 +1,5 @@
 CC=../../buildtools/arm-eabi-4.7/bin/arm-eabi-
 FUNCTIONS = wlc_bmac_recv_hook
-#FUNCTIONS = dngl_sendpkt_hook
 FUNCTIONS_BIN = $(FUNCTIONS:=.bin)
 
 all: brcmfmac/brcmfmac.ko brcmfmac43430-sdio.bin
@@ -19,6 +18,7 @@ patch.o: patch.c ../include/*.h
 
 patch.elf: patch.ld patch.o ../wrapper/wrapper.o
 	$(CC)ld -T $< -o $@ --gc-sections --print-gc-sections -M
+#	$(CC)ld -N -T $< -o $@ --gc-sections --print-gc-sections -M
 
 $(FUNCTIONS_BIN): patch.elf
 	$(CC)objcopy -O binary -j .text.$(basename $@) $< $@

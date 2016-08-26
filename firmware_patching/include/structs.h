@@ -23,22 +23,12 @@ struct osl_info {
 	unsigned int bustype;
 } __attribute__((packed));
 
+/* CHECKED */
 typedef struct sk_buff {
-	struct sk_buff *next;       /* 0x00 */
-	struct sk_buff *prev;       /* 0x04 */
-	void *head;                 /* 0x08 - head of buffer */
-    void *end;                  /* 0x0C - end of buffer */
-	void *data;                 /* 0x10 - data head pointer */
-	short len;                  /* 0x14 */
-    short prio;                 /* 0x16 */
-    short PAD;                  /* 0x18 */
-    short PAD;                  /* 0x1A */
-    int PAD;                    /* 0x1C */
-    int flags;                  /* 0x20 */
-    int PAD;                    /* 0x24 */
-    int PAD;                    /* 0x28 */
-    int lifetime_end;           /* 0x2C */
-    void *scb;                  /* 0x30 */
+    int PAD;                    /* 0x00 */
+    int PAD;                    /* 0x04 */
+	void *data;                 /* 0x08 */
+	short len;                  /* 0x0c */
 } __attribute__((packed)) sk_buff;
 
 struct tunables {
@@ -534,6 +524,7 @@ struct wlc_info {
     int PAD;                            /* 0X5FC */
 };
 
+/* partly CHECKED */
 struct wlc_pub {
     struct wlc_info *wlc;               /* 0x000 */
     int PAD;                            /* 0x004 */
@@ -542,13 +533,13 @@ struct wlc_pub {
     int PAD;                            /* 0x010 */
     int PAD;                            /* 0x014 */
     int PAD;                            /* 0x018 */
-    int PAD;                            /* 0x01C */
+    struct tunables *tunables;          /* 0x01C */
     int PAD;                            /* 0x020 */
     char up_maybe;                      /* 0x024 */
     char field_25;                      /* 0x025 */
     char field_26;                      /* 0x026 */
     char field_27;                      /* 0x027 */
-    struct tunables *tunables;          /* 0x028 */
+    int PAD;                            /* 0x028 */
     int PAD;                            /* 0x02C */
     int field_30;                       /* 0x030 */
     int PAD;                            /* 0x034 */
