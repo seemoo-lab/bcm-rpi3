@@ -63,11 +63,12 @@
 #define WRAPPER_H
 #include "../include/structs.h"
 
-extern int printf(const char *format, ...); // 0x803B60
 extern void *dma_rx(void *di); // 0x4E44
 extern void dma_rxfill(void *di); // 0x5070
-extern void *wlc_bmac_mctrl(void *wlc_hw, int mask_1, int val); // 0x8457F4
 extern signed int dngl_sendpkt(void *sdio, void *frame, int chan); // 0x3520
+extern void *memset(void *dst, int value, int len); // 0x803B14
+extern int printf(const char *format, ...); // 0x803B60
+extern void *wlc_bmac_mctrl(void *wlc_hw, int mask_1, int val); // 0x8457F4
 extern int wlc_iovar_op(void *wlc, char *varname, void *params, int p_len, void *arg, int len, char set, void *wlcif); // 0x82ABEC
 extern void *wlc_recv(void *wlc, void *p); // 0x12A0C
 
