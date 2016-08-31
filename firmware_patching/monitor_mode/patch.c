@@ -50,7 +50,9 @@
 #include "../include/bcm43438.h"
 #include "../include/wrapper.h"	// wrapper definitions for functions that already exist in the firmware
 #include "../include/structs.h"	// structures that are used by the code in the firmware
-//#include "../include/helper.h"	// useful helper functions
+#include "ieee80211_radiotap.h"
+#include "radiotap.h"
+#include "d11.h"
 
 struct brcmf_proto_bcdc_header {
 	unsigned char flags;
@@ -58,6 +60,11 @@ struct brcmf_proto_bcdc_header {
 	unsigned char flags2;
 	unsigned char data_offset;
 };
+
+struct bdc_radiotap_header {
+    struct brcmf_proto_bcdc_header bdc;
+    struct ieee80211_radiotap_header radiotap;
+} __attribute__((packed));
 
 void *
 skb_push(sk_buff *p, unsigned int len) {
@@ -79,9 +86,11 @@ int
 wlc_bmac_recv_hook(struct wlc_hw_info *wlc_hw, unsigned int fifo, int bound, int *processed_frame_cnt) {
     struct wlc_pub *pub = wlc_hw->wlc->pub;
     sk_buff *p;
-    struct brcmf_proto_bcdc_header *frame;
+    struct bdc_radiotap_header *frame;
+    struct wlc_d11rxhdr *wlc_rxhdr;
     int n = 0;
     int bound_limit = bound ? pub->tunables->rxbnd : -1;
+    //struct tsf tsf;
 
     do {
         p = dma_rx (wlc_hw->di[fifo]);
@@ -90,15 +99,31 @@ wlc_bmac_recv_hook(struct wlc_hw_info *wlc_hw, unsigned int fifo, int bound, int
         }
 
         //TODO: check wlc_rxhdr->rxhdr.RxStatus1
-        skb_pull(p, 44);
+        wlc_rxhdr = (struct wlc_d11rxhdr *) p->data;
 
-		skb_push(p, sizeof(struct brcmf_proto_bcdc_header));
+        if(wlc_rxhdr->rxhdr.RxStatus1 & 4) {
+            skb_pull(p, 46);
+        } else {
+            skb_pull(p, 44);
+        }
 
-        frame = (struct brcmf_proto_bcdc_header *) p->data;
-        frame->flags = 0x20;
-        frame->priority = 0;
-        frame->flags2 = 0;
-        frame->data_offset = 0;
+		skb_push(p, sizeof(struct bdc_radiotap_header));
+
+        frame = (struct bdc_radiotap_header *) p->data;
+        frame->bdc.flags = 0x20;
+        frame->bdc.priority = 0;
+        frame->bdc.flags2 = 0;
+        frame->bdc.data_offset = 0;
+
+        frame->radiotap.it_version = 0;
+        frame->radiotap.it_pad = 0;
+        frame->radiotap.it_len = sizeof(struct ieee80211_radiotap_header);
+        frame->radiotap.it_present = 
+             (1<<IEEE80211_RADIOTAP_TSFT) 
+           | (1<<IEEE80211_RADIOTAP_FLAGS);
+        frame->radiotap.tsf.tsf_l = 0;
+        frame->radiotap.tsf.tsf_h = 0;
+        frame->radiotap.flags = IEEE80211_RADIOTAP_F_FCS;
 
         dngl_sendpkt(SDIO_INFO_ADDR, p, 2);
 

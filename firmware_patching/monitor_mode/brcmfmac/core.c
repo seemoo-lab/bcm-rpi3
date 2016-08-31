@@ -707,7 +707,7 @@ int brcmf_net_attach(struct brcmf_if *ifp, bool rtnl_locked)
 			      drvr->hdrlen;
 
     /* NEXMON */
-    ndev->type = ARPHRD_IEEE80211;
+    ndev->type = ARPHRD_IEEE80211_RADIOTAP;
 
 	/* set the mac address */
 	memcpy(ndev->dev_addr, ifp->mac_addr, ETH_ALEN);

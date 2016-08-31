@@ -55,5 +55,5 @@ patch_firmware("brcmfmac43430-sdio.orig.bin",
 	# GenericPatch2(<address to replace word>, <two byte value>),
 
 	# This line replaces the firmware version string that is printed to the console on startup to identify which firmware is loaded by the driver
-	#StringPatch(0x1FD31B, (os.getcwd().split('/')[-1] + " (" + time.strftime("%d.%m.%Y %H:%M:%S") + ")\n")[:52]), # 53 character string
+	#StringPatch(0x4C55D, (os.getcwd().split('/')[-1] + " (" + time.strftime("%d.%m.%Y %H:%M:%S") + ")\n")[:52]), # 53 character string
 	], 0x0)
