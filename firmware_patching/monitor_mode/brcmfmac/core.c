@@ -17,6 +17,8 @@
 #include <linux/kernel.h>
 #include <linux/etherdevice.h>
 #include <linux/module.h>
+/* NEXMON */
+#include <linux/if_arp.h>
 #include <net/cfg80211.h>
 #include <net/rtnetlink.h>
 #include <brcmu_utils.h>
@@ -34,6 +36,8 @@
 #include "proto.h"
 #include "pcie.h"
 #include "common.h"
+/* NEXMON */
+#include "nexmon_procfs.h"
 
 MODULE_AUTHOR("Broadcom Corporation");
 MODULE_DESCRIPTION("Broadcom 802.11 wireless LAN fullmac driver.");
@@ -696,11 +700,14 @@ int brcmf_net_attach(struct brcmf_if *ifp, bool rtnl_locked)
 	/* set appropriate operations */
 	ndev->netdev_ops = &brcmf_netdev_ops_pri;
 
-	ndev->needed_headroom += drvr->hdrlen;
+    ndev->needed_headroom += drvr->hdrlen;
 	ndev->ethtool_ops = &brcmf_ethtool_ops;
 
 	drvr->rxsz = ndev->mtu + ndev->hard_header_len +
 			      drvr->hdrlen;
+
+    /* NEXMON */
+    ndev->type = ARPHRD_IEEE80211;
 
 	/* set the mac address */
 	memcpy(ndev->dev_addr, ifp->mac_addr, ETH_ALEN);
@@ -1234,6 +1241,10 @@ static int __init brcmfmac_module_init(void)
 #ifdef CONFIG_BRCMFMAC_SDIO
 	brcmf_sdio_init();
 #endif
+    
+    /* NEXMON procfs */
+    proc_create("nexmon_consoledump", 0, NULL, &rom_proc_dump_fops);
+
 	if (!schedule_work(&brcmf_driver_work))
 		return -EBUSY;
 
@@ -1243,6 +1254,9 @@ static int __init brcmfmac_module_init(void)
 static void __exit brcmfmac_module_exit(void)
 {
 	cancel_work_sync(&brcmf_driver_work);
+
+    /* NEXMON procfs */
+    remove_proc_entry("nexmon_consoledump", NULL);
 
 #ifdef CONFIG_BRCMFMAC_SDIO
 	brcmf_sdio_exit();

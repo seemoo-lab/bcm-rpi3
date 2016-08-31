@@ -44,6 +44,8 @@
 #include "sdio.h"
 #include "chip.h"
 #include "firmware.h"
+/* NEXMON */
+#include "nexmon_procfs.h"
 
 #define DCMD_RESP_TIMEOUT	2000	/* In milli second */
 #define CTL_DONE_TIMEOUT	2000	/* In milli second */
@@ -1476,7 +1478,8 @@ static int brcmf_sdio_hdparse(struct brcmf_sdio *bus, u8 *header,
 		return -ENXIO;
 	}
 	if (rd->seq_num != rx_seq) {
-		brcmf_dbg(SDIO, "seq %d, expected %d\n", rx_seq, rd->seq_num);
+		brcmf_err("seq %d: sequence number error, expect %d\n",
+			  rx_seq, rd->seq_num);
 		bus->sdcnt.rx_badseq++;
 		rd->seq_num = rx_seq;
 	}
@@ -2938,6 +2941,12 @@ break2:
 }
 #endif				/* DEBUG */
 
+#define MY_ROM_BUFFER_MAX 0x1fffff
+int my_rom_buffer_len = 0;
+u8 my_rom_buffer[0x1fffff];
+struct brcmf_sdio *my_sdio = NULL;
+struct brcmf_bus *my_bus = NULL;
+
 static int
 brcmf_sdio_bus_txctl(struct device *dev, unsigned char *msg, uint msglen)
 {
@@ -3339,6 +3348,8 @@ static int brcmf_sdio_download_code_file(struct brcmf_sdio *bus,
 	int err;
 
 	brcmf_dbg(TRACE, "Enter\n");
+    /*NEXMON*/
+    my_sdio = bus;
 
 	err = brcmf_sdiod_ramrw(bus->sdiodev, true, bus->ci->rambase,
 				(u8 *)fw->data, fw->size);
@@ -3498,6 +3509,9 @@ static int brcmf_sdio_bus_preinit(struct device *dev)
 	uint pad_size;
 	u32 value;
 	int err;
+
+    /* NEXMON */
+    my_bus = bus_if;
 
 	/* the commands below use the terms tx and rx from
 	 * a device perspective, ie. bus:txglom affects the
@@ -3768,7 +3782,7 @@ brcmf_sdio_drivestrengthinit(struct brcmf_sdio_dev *sdiodev,
 		str_shift = 11;
 		break;
 	default:
-		brcmf_dbg(INFO, "No SDIO driver strength init needed for chip %s rev %d pmurev %d\n",
+		brcmf_err("No SDIO Drive strength init done for chip %s rev %d pmurev %d\n",
 			  ci->name, ci->chiprev, ci->pmurev);
 		break;
 	}
@@ -4378,3 +4392,61 @@ int brcmf_sdio_sleep(struct brcmf_sdio *bus, bool sleep)
 	return ret;
 }
 
+/* NEXMON */
+int
+write_ram_to_buffer(void) {
+    //Console start and end, size: 0x400
+    u32 start_addr = 0x6dab4;
+    u32 end_addr =   0x6deb4;
+
+    u32 address = start_addr;
+    u32 chunk_sz = 0x100;
+    u8 data[0x100];
+
+    brcmf_err("NEXMON, enter\n");
+
+	my_sdio->alp_only = true;
+    //Reset buffer
+    my_rom_buffer[0] = 0;
+    my_rom_buffer_len = 0;
+	
+	sdio_claim_host(my_sdio->sdiodev->func[1]);
+	brcmf_sdio_bus_sleep(my_sdio, false, false);
+    brcmf_sdio_clkctl(my_sdio, CLK_AVAIL, false);
+   
+    while(address >= start_addr && address < end_addr) {
+        brcmf_err("NEXMON rom loop, current address: 0x%x, my_rom_buffer_len: %d\n", address, my_rom_buffer_len);
+
+        brcmf_sdiod_ramrw(my_sdio->sdiodev, false, address, data, chunk_sz);
+
+        memcpy(&(my_rom_buffer[my_rom_buffer_len]), data, (size_t) chunk_sz);
+                
+        my_rom_buffer_len += chunk_sz;
+        address += chunk_sz;
+
+    }
+    
+    print_hex_dump_bytes("", DUMP_PREFIX_NONE, my_rom_buffer, 0x100);
+	
+    my_sdio->alp_only = false;
+    sdio_release_host(my_sdio->sdiodev->func[1]);
+    
+    return 0;
+
+}
+
+int
+procfs_dump_open(struct inode *inode, struct file *file) {
+    brcmf_err("NEXMON, enter\n");
+    if(my_bus != NULL) {
+        write_ram_to_buffer();
+    } else {
+        brcmf_err("NEXMON error, no my_sdio_bus = NULL!\n");
+    }
+    return 0;
+}
+
+ssize_t
+procfs_dump_read(struct file *filp, char *buffer, size_t length, loff_t *offset) {
+    return simple_read_from_buffer(buffer, length, offset, my_rom_buffer, my_rom_buffer_len);
+}
