@@ -50,7 +50,7 @@
 #include "../include/bcm43438.h"
 #include "../include/wrapper.h"	// wrapper definitions for functions that already exist in the firmware
 #include "../include/structs.h"	// structures that are used by the code in the firmware
-#include "../include/helper.h"	// useful helper functions
+//#include "../include/helper.h"	// useful helper functions
 
 struct brcmf_proto_bcdc_header {
 	unsigned char flags;
