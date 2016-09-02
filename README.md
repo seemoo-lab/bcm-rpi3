@@ -14,7 +14,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 * Everything needed to build the pachtes by yourself
 
 ## Steps needed to run the prepared SD card image on your Raspberry Pi 3
-* Login as `root` with the password `seemooo`
+* Login as `root` with the password `nexmon`
 
 ### Monitor Mode
 * `insmod /root/brcmfmac.ko`
