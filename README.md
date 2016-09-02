@@ -10,7 +10,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 ## What this Repo contains
 
-* A bootable image (Raspbian 8) for the micro SD card of your Raspberry Pi 3, see:
+* A bootable image (Raspbian 8) for the micro SD card (16GB) of your Raspberry Pi 3, see:
   * https://docs.google.com/uc?id=0Bxy-sW7-zQXjLVVsaThiOVYtQjg&export=download
 * Everything needed to build the pachtes by yourselsff
 
