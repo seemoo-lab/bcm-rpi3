@@ -855,10 +855,12 @@ EXPORT_SYMBOL(cfg80211_reg_can_beacon_relax);
 int cfg80211_set_monitor_channel(struct cfg80211_registered_device *rdev,
 				 struct cfg80211_chan_def *chandef)
 {
+    /* NEXMON */
+    printk(KERN_ERR "cfg80211_set_monitor_channel called!!!\n");
 	if (!rdev->ops->set_monitor_channel)
 		return -EOPNOTSUPP;
-	if (!cfg80211_has_monitors_only(rdev))
-		return -EBUSY;
+	//if (!cfg80211_has_monitors_only(rdev))
+	//	return -EBUSY;
 
 	return rdev_set_monitor_channel(rdev, chandef);
 }
