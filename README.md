@@ -2,7 +2,7 @@
 
 ## What is NexMon?
 
-NexMon is a firmware patching framework initially build for the BCM4339 WiFi firmware of Nexus 5 smartphones. However, this repository contains firmware patches for the BCM43438 WiFi chip used in the Raspberry Pi 3. It's main intension was to enable monitor mode and frame injection, which is already working quite well. Nevertheless, we also publish many example patches that allow to dive into firmware reverse engineering and firmware patching. Especially, the ability to write firmware patches in C makes it easy to use, also for beginenrs.
+NexMon is a firmware patching framework initially build for the BCM4339 WiFi firmware of Nexus 5 smartphones. However, this repository contains firmware patches for the BCM43438 WiFi chip used in the Raspberry Pi 3. It's main intension was to enable monitor mode and frame injection, which is already working quite well. Nevertheless, we also publish many example patches that allow to dive into firmware reverse engineering and firmware patching. Especially, the ability to write firmware patches in C makes it easy to use, also for beginners.
 
 ## WARNING
 
