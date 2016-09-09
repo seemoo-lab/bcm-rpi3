@@ -10,8 +10,8 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 ## What this Repo contains
 
-* A bootable image (Raspbian 8) for the micro SD card (16GB) of your Raspberry Pi 3, see:
-  * https://docs.google.com/uc?id=0Bxy-sW7-zQXjLVVsaThiOVYtQjg&export=download
+* A bootable image (Raspbian 8) for the micro SD card (8GB) of your Raspberry Pi 3, including a patched version of **airgrack-ng**:
+  * [download](https://docs.google.com/uc?id=0Bxy-sW7-zQXjdm9hamNKbkttZG8&export=download)
 * Everything needed to build the pachtes by yourself
 
 ## Steps needed to run the prepared SD card image on your Raspberry Pi 3
@@ -20,6 +20,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 ### Monitor Mode
 * `insmod /root/brcmfmac.ko`
 * thats it, try using tcpdump: `tcpdump -i wlan0 -s0`
+* or airodump-ng: `airodump-ng wlan0`
 
 ### Original firmware and driver
 * Optional: remove the monitor mode driver `rmmod brcmfmac`
@@ -34,7 +35,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 * copy the `brcmfmac43430-sdio.bin` to `/lib/firmware/brcm/` directory of your Raspberry Pi
 
 ## Caveats
-* ~~Switching channels does not work~~ it works now, but it needs a patch in the kernel, see 8f4b7501dedf72306c471e4962478b8ffe91d7a8, the SD Card image is also not updated jet
+* ~~Switching channels does not work~~ it works now, but it needs a patch in the kernel, see 8f4b7501dedf72306c471e4962478b8ffe91d7a8
 
 ## Read our papers
 
