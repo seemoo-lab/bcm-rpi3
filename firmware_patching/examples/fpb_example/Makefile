@@ -1,24 +1,24 @@
-CC=../../buildtools/arm-eabi-4.7/bin/arm-eabi-
+CC=../../../buildtools/arm-eabi-4.7/bin/arm-eabi-
 #FUNCTIONS = wlc_ucode_download_hook wlc_valid_chanspec_hook
 #FUNCTIONS = wlc_ucode_download_hook wf_chspec_malformed_hook
-FUNCTIONS = wlc_ucode_download_hook sub_413E0_hook
+FUNCTIONS = wlc_ucode_download_hook sub_413E0_hook fpb_remap_dest
 FUNCTIONS_BIN = $(FUNCTIONS:=.bin)
 
 all: brcmfmac/brcmfmac.ko brcmfmac43430-sdio.bin
 
 brcmfmac/brcmfmac.ko: check-nexmon-setup-env
-	make -C ../../kernel/ M=$$PWD/brcmfmac -j2
+	make -C ../../../kernel/ M=$$PWD/brcmfmac -j2
 
 brcmfmac43430-sdio.bin: patcher.py patch.elf text.bin $(FUNCTIONS_BIN)
 	./patcher.py
 
-patch.o: patch.c ../include/*.h
+patch.o: patch.c ../../include/*.h
 	$(CC)gcc -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding -mthumb -march=armv7-m -ffunction-sections -fdata-sections -c $< -o $@
 
-../wrapper/wrapper.o: ../include/wrapper.h
-	make -C ../wrapper
+../../wrapper/wrapper.o: ../../include/wrapper.h
+	make -C ../../wrapper
 
-patch.elf: patch.ld patch.o ../wrapper/wrapper.o
+patch.elf: patch.ld patch.o ../../wrapper/wrapper.o
 #	$(CC)ld -T $< -o $@ --gc-sections --print-gc-sections -M
 	$(CC)ld -N -T $< -o $@ --gc-sections --print-gc-sections -M
 
@@ -43,6 +43,6 @@ endif
 
 clean:
 	rm -f brcmfmac43430-sdio.bin fw_bcmdhd.complete.bin patch.o patch.elf text.bin $(FUNCTIONS_BIN)
-	make -C ../../kernel/ M=$$PWD/brcmfmac clean
+	make -C ../../../kernel/ M=$$PWD/brcmfmac clean
 
 FORCE:

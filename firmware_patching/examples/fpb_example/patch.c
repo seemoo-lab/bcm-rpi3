@@ -47,27 +47,19 @@
  *                                                                         *
  **************************************************************************/
 
-#include "../include/bcm43438.h"
-#include "../include/wrapper.h"	// wrapper definitions for functions that already exist in the firmware
-#include "../include/structs.h"	// structures that are used by the code in the firmware
-
-uint32_t little_endian_16_bit(uint32_t val)
-{
-        return ((val & 0xFFFF0000) >> 16) | ((val & 0x0000FFFF) << 16);
-}
+#include "../../include/bcm43438.h"
+#include "../../include/wrapper.h"	// wrapper definitions for functions that already exist in the firmware
+#include "../../include/structs.h"	// structures that are used by the code in the firmware
 
 void
 conf_fpb(void)
 {
-    //ENABLE CONTROL
-    *((uint32_t *) 0xE0002000) |=  0x3;
     //REMAP REG CONFIG
-    *((uint32_t *) 0xE0002004) = 0x20007000;
+    *((uint32_t *) 0xE0002004) = 0xa0; // see also: patch.ld and patcher.py
     //REMAP COMP[0], bit[0] is 1 to enable
     *((uint32_t *) 0xE0002008) = (0x4E9A0 | 0x1);
-    //NEW INSTRUCTION in REMAP TABLE
-    *((uint32_t *) 0x20007000) = little_endian_16_bit(0xF7B2F836);
-    //F7B2F836 b2f736f8
+    //ENABLE CONTROL
+    *((uint32_t *) 0xE0002000) |=  0x3;
 	printf("FPB config finished!\n");
 }
 
@@ -107,6 +99,14 @@ sub_413E0_hook(void)
 		"pop {r0-r3,lr}\n"				// Pop the registers that were saved before
 		"b sub_413E0\n"		// Call the hooked function
 		);
+}
+
+__attribute__((naked)) void
+fpb_remap_dest(void)
+{
+    asm(
+        "bl sub_413E0_hook\n"
+       );
 }
 
 void
