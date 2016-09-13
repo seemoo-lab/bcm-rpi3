@@ -18,7 +18,7 @@ def getSectionAddr(name):
     except:
         return 0
 
-patch_firmware("brcmfmac43430-sdio.orig.bin", 
+patch_firmware("../../bootimg_src/firmware/brcmfmac43430-sdio.orig.bin", 
     "brcmfmac43430-sdio.bin", [
 	# The text section is always required and contains code that is called by patches and hooks but not directly placed to predefined memory locations
 	ExternalArmPatch(getSectionAddr(".text"), "text.bin"),
