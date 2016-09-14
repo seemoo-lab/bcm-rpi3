@@ -1,5 +1,5 @@
 CC=../../buildtools/arm-eabi-4.7/bin/arm-eabi-
-FUNCTIONS = wlc_bmac_recv_hook
+FUNCTIONS = wlc_recvdata_hook wl_monitor_hook fpb_remap_dest wlc_ucode_download_hook
 FUNCTIONS_BIN = $(FUNCTIONS:=.bin)
 
 all: brcmfmac/brcmfmac.ko brcmfmac43430-sdio.bin

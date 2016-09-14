@@ -50,9 +50,11 @@
 #include "../include/bcm43438.h"
 #include "../include/wrapper.h"	// wrapper definitions for functions that already exist in the firmware
 #include "../include/structs.h"	// structures that are used by the code in the firmware
+//#include "../include/helper.h"
 #include "ieee80211_radiotap.h"
 #include "radiotap.h"
 #include "d11.h"
+#include "brcm.h"
 
 struct brcmf_proto_bcdc_header {
 	unsigned char flags;
@@ -82,66 +84,74 @@ skb_pull(sk_buff *p, unsigned int len) {
     return p->data;
 }
 
-int
-wlc_bmac_recv_hook(struct wlc_hw_info *wlc_hw, unsigned int fifo, int bound, int *processed_frame_cnt) {
-    struct wlc_pub *pub = wlc_hw->wlc->pub;
-    sk_buff *p;
-    struct bdc_radiotap_header *frame;
-    struct wlc_d11rxhdr *wlc_rxhdr;
-    int n = 0;
-    int bound_limit = bound ? pub->tunables->rxbnd : -1;
-    //struct tsf tsf;
+void
+conf_fpb(void)
+{
+    //REMAP REG CONFIG
+    *((uint32_t *) 0xE0002004) = 0xa0;
+    //REMAP COMP[0], bit[0] is 1 to enable
+    *((uint32_t *) 0xE0002008) = (0x81F620 | 0x1);
+    //ENABLE CONTROL
+    *((uint32_t *) 0xE0002000) |=  0x3;
+    printf("FPB config finished!\n");
+}
 
-    do {
-        p = dma_rx (wlc_hw->di[fifo]);
-        if(!p) {
-            goto LEAVE;
-        }
+__attribute__((naked)) void
+wlc_ucode_download_hook(void)
+{
+    asm(
+        "push {r0-r3,lr}\n"             // Push the registers that could be modified by a call to a C function
+        "bl conf_fpb\n"             // Call a C function
+        "pop {r0-r3,lr}\n"              // Pop the registers that were saved before
+        "b wlc_ucode_download\n"        // Call the hooked function
+        );
+}
 
-        //TODO: check wlc_rxhdr->rxhdr.RxStatus1
-        wlc_rxhdr = (struct wlc_d11rxhdr *) p->data;
-
-        if(wlc_rxhdr->rxhdr.RxStatus1 & 4) {
-            skb_pull(p, 46);
-        } else {
-            skb_pull(p, 44);
-        }
-
-		skb_push(p, sizeof(struct bdc_radiotap_header));
-
-        frame = (struct bdc_radiotap_header *) p->data;
-        frame->bdc.flags = 0x20;
-        frame->bdc.priority = 0;
-        frame->bdc.flags2 = 0;
-        frame->bdc.data_offset = 0;
-
-        frame->radiotap.it_version = 0;
-        frame->radiotap.it_pad = 0;
-        frame->radiotap.it_len = sizeof(struct ieee80211_radiotap_header);
-        frame->radiotap.it_present = 
-             (1<<IEEE80211_RADIOTAP_TSFT) 
-           | (1<<IEEE80211_RADIOTAP_FLAGS);
-        frame->radiotap.tsf.tsf_l = 0;
-        frame->radiotap.tsf.tsf_h = 0;
-        frame->radiotap.flags = IEEE80211_RADIOTAP_F_FCS;
-
-        dngl_sendpkt(SDIO_INFO_ADDR, p, 2);
-
-    } while(n < bound_limit);
-
-LEAVE:
-    dma_rxfill(wlc_hw->di[fifo]);
-
-    *processed_frame_cnt += n;
-    
-    if(n < bound_limit) {
-        return 0;
-    } else {
-        return 1;
-    }
+__attribute__((naked)) void
+fpb_remap_dest(void)
+{
+    asm(
+        "bl wl_monitor_hook\n"
+       );
 }
 
 void
-dummy_0F0(void) {
-    ;
+wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
+    struct sk_buff *p_new = pkt_buf_get_skb(OSL_INFO_ADDR, p->len + sizeof(struct bdc_radiotap_header));
+    struct bdc_radiotap_header *frame = (struct bdc_radiotap_header *) p_new->data;
+
+    struct tsf tsf;
+	wlc_bmac_read_tsf(wl->wlc_hw, &tsf.tsf_l, &tsf.tsf_h);
+
+	memset(p_new->data, 0, sizeof(struct bdc_radiotap_header));
+
+    frame->bdc.flags = 0x20;
+    frame->bdc.priority = 0;
+    frame->bdc.flags2 = 0;
+    frame->bdc.data_offset = 0;
+
+    frame->radiotap.it_version = 0;
+    frame->radiotap.it_pad = 0;
+    frame->radiotap.it_len = sizeof(struct ieee80211_radiotap_header);
+    frame->radiotap.it_present = 
+          (1<<IEEE80211_RADIOTAP_TSFT) 
+        | (1<<IEEE80211_RADIOTAP_FLAGS)
+        | (1<<IEEE80211_RADIOTAP_CHANNEL)
+        | (1<<IEEE80211_RADIOTAP_DBM_ANTSIGNAL);
+    frame->radiotap.tsf.tsf_l = tsf.tsf_l;
+    frame->radiotap.tsf.tsf_h = tsf.tsf_h;
+    frame->radiotap.flags = IEEE80211_RADIOTAP_F_FCS;
+    frame->radiotap.chan_freq = wlc_phy_channel2freq(CHSPEC_CHANNEL(sts->chanspec));
+    frame->radiotap.chan_flags = 0;
+    frame->radiotap.dbm_antsignal = sts->rssi;
+	
+	memcpy(p_new->data + sizeof(struct bdc_radiotap_header), p->data + 6, p->len - 6);
+
+	p_new->len -= 6;
+	dngl_sendpkt(SDIO_INFO_ADDR, p_new, 2);
+}
+
+int
+wlc_recvdata_hook(void *wlc, void *osh, void *rxh, void *p) {
+    return osl_pktfree(osh, p, 0);
 }

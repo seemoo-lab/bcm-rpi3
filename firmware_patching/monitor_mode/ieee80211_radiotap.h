@@ -35,126 +35,9 @@
 #ifndef IEEE80211RADIOTAP_H
 #define IEEE80211RADIOTAP_H
 
-//#include <linux/if_ether.h>
-//#include <linux/kernel.h>
-//#include <asm/unaligned.h>
-
 /* Base version of the radiotap packet header data */
 #define PKTHDR_RADIOTAP_VERSION		0
 
-/* A generic radio capture format is desirable. There is one for
- * Linux, but it is neither rigidly defined (there were not even
- * units given for some fields) nor easily extensible.
- *
- * I suggest the following extensible radio capture format. It is
- * based on a bitmap indicating which fields are present.
- *
- * I am trying to describe precisely what the application programmer
- * should expect in the following, and for that reason I tell the
- * units and origin of each measurement (where it applies), or else I
- * use sufficiently weaselly language ("is a monotonically nondecreasing
- * function of...") that I cannot set false expectations for lawyerly
- * readers.
- */
-
-
-/* Name                                 Data type    Units
- * ----                                 ---------    -----
- *
- * IEEE80211_RADIOTAP_TSFT              __le64       microseconds
- *
- *      Value in microseconds of the MAC's 64-bit 802.11 Time
- *      Synchronization Function timer when the first bit of the
- *      MPDU arrived at the MAC. For received frames, only.
- *
- * IEEE80211_RADIOTAP_CHANNEL           2 x __le16   MHz, bitmap
- *
- *      Tx/Rx frequency in MHz, followed by flags (see below).
- *
- * IEEE80211_RADIOTAP_FHSS              __le16       see below
- *
- *      For frequency-hopping radios, the hop set (first byte)
- *      and pattern (second byte).
- *
- * IEEE80211_RADIOTAP_RATE              u8           500kb/s
- *
- *      Tx/Rx data rate
- *
- * IEEE80211_RADIOTAP_DBM_ANTSIGNAL     s8           decibels from
- *                                                   one milliwatt (dBm)
- *
- *      RF signal power at the antenna, decibel difference from
- *      one milliwatt.
- *
- * IEEE80211_RADIOTAP_DBM_ANTNOISE      s8           decibels from
- *                                                   one milliwatt (dBm)
- *
- *      RF noise power at the antenna, decibel difference from one
- *      milliwatt.
- *
- * IEEE80211_RADIOTAP_DB_ANTSIGNAL      u8           decibel (dB)
- *
- *      RF signal power at the antenna, decibel difference from an
- *      arbitrary, fixed reference.
- *
- * IEEE80211_RADIOTAP_DB_ANTNOISE       u8           decibel (dB)
- *
- *      RF noise power at the antenna, decibel difference from an
- *      arbitrary, fixed reference point.
- *
- * IEEE80211_RADIOTAP_LOCK_QUALITY      __le16       unitless
- *
- *      Quality of Barker code lock. Unitless. Monotonically
- *      nondecreasing with "better" lock strength. Called "Signal
- *      Quality" in datasheets.  (Is there a standard way to measure
- *      this?)
- *
- * IEEE80211_RADIOTAP_TX_ATTENUATION    __le16       unitless
- *
- *      Transmit power expressed as unitless distance from max
- *      power set at factory calibration.  0 is max power.
- *      Monotonically nondecreasing with lower power levels.
- *
- * IEEE80211_RADIOTAP_DB_TX_ATTENUATION __le16       decibels (dB)
- *
- *      Transmit power expressed as decibel distance from max power
- *      set at factory calibration.  0 is max power.  Monotonically
- *      nondecreasing with lower power levels.
- *
- * IEEE80211_RADIOTAP_DBM_TX_POWER      s8           decibels from
- *                                                   one milliwatt (dBm)
- *
- *      Transmit power expressed as dBm (decibels from a 1 milliwatt
- *      reference). This is the absolute power level measured at
- *      the antenna port.
- *
- * IEEE80211_RADIOTAP_FLAGS             u8           bitmap
- *
- *      Properties of transmitted and received frames. See flags
- *      defined below.
- *
- * IEEE80211_RADIOTAP_ANTENNA           u8           antenna index
- *
- *      Unitless indication of the Rx/Tx antenna for this packet.
- *      The first antenna is antenna 0.
- *
- * IEEE80211_RADIOTAP_RX_FLAGS          __le16       bitmap
- *
- *     Properties of received frames. See flags defined below.
- *
- * IEEE80211_RADIOTAP_TX_FLAGS          __le16       bitmap
- *
- *     Properties of transmitted frames. See flags defined below.
- *
- * IEEE80211_RADIOTAP_RTS_RETRIES       u8           data
- *
- *     Number of rts retries a transmitted frame used.
- *
- * IEEE80211_RADIOTAP_DATA_RETRIES      u8           data
- *
- *     Number of unicast retries a transmitted frame used.
- *
- */
 enum ieee80211_radiotap_type {
 	IEEE80211_RADIOTAP_TSFT = 0,
 	IEEE80211_RADIOTAP_FLAGS = 1,
@@ -226,13 +109,5 @@ enum ieee80211_radiotap_type {
 	(((x) == 14) ? 2484 : ((x) * 5) + 2407) : \
 	((x) + 1000) * 5)
 
-/* helpers */
-//static inline int ieee80211_get_radiotap_len(unsigned char *data)
-//{
-//	struct ieee80211_radiotap_header *hdr =
-//		(struct ieee80211_radiotap_header *)data;
-//
-//	return get_unaligned_le16(&hdr->it_len);
-//}
 
 #endif				/* IEEE80211_RADIOTAP_H */

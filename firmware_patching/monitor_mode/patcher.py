@@ -23,7 +23,15 @@ patch_firmware("../../bootimg_src/firmware/brcmfmac43430-sdio.orig.bin",
 	# The text section is always required and contains code that is called by patches and hooks but not directly placed to predefined memory locations
 	ExternalArmPatch(getSectionAddr(".text"), "text.bin"),
 
-	ExternalArmPatch(getSectionAddr(".text.wlc_bmac_recv_hook"), "wlc_bmac_recv_hook.bin"),
+        ExternalArmPatch(getSectionAddr(".text.wlc_ucode_download_hook"), "wlc_ucode_download_hook.bin"),
+        BLPatch(0x4E994, getSectionAddr(".text.wlc_ucode_download_hook") + 1),
+
+	ExternalArmPatch(getSectionAddr(".text.wlc_recvdata_hook"), "wlc_recvdata_hook.bin"),
+        BPatch(0x12B78, getSectionAddr(".text.wlc_recvdata_hook")),
+
+        ExternalArmPatch(getSectionAddr(".text.wl_monitor_hook"), "wl_monitor_hook.bin"),
+
+        ExternalArmPatch(0xa0, "fpb_remap_dest.bin"),
 
 	#ExternalArmPatch(getSectionAddr(".text.wlc_recv_hook"), "wlc_recv_hook.bin"),
         #BLPatch(0x1C00E, getSectionAddr(".text.wlc_recv_hook")),

@@ -16,6 +16,17 @@
 #define	PAD		_XSTR(__LINE__)
 #endif
 
+struct wl_rxsts {
+    uint8 PAD[8];
+    uint16 chanspec;
+    uint16 datarate;
+    uint8 PAD1[12];
+    uint16 unkn1; /* ??? */
+    uint16 unkn2; /* increases over time */
+    uint8 PAD2[4];
+    uint8 rssi;
+} __attribute__((packed));
+
 struct osl_info {
 	unsigned int pktalloced;
 	int PAD[1];
@@ -25,10 +36,13 @@ struct osl_info {
 
 /* CHECKED */
 typedef struct sk_buff {
-    int PAD;                    /* 0x00 */
-    int PAD;                    /* 0x04 */
+    struct sk_buff *unkn;        /* 0x00 */
+    struct sk_buff *head;        /* 0x04 */
 	void *data;                 /* 0x08 */
 	short len;                  /* 0x0c */
+    int PAD;                    /* 0x0e */
+    int PAD;                    /* 0x12 */
+    struct sk_buff *prev;       /* 0x16 */
 } __attribute__((packed)) sk_buff;
 
 struct tunables {
