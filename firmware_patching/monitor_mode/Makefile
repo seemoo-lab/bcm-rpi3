@@ -5,6 +5,8 @@ FUNCTIONS_BIN = $(FUNCTIONS:=.bin)
 all: brcmfmac/brcmfmac.ko brcmfmac43430-sdio.bin
 
 brcmfmac/brcmfmac.ko: check-nexmon-setup-env
+	make -C ../../kernel/ bcm2709_defconfig
+	make -C ../../kernel/
 	make -C ../../kernel/ M=$$PWD/brcmfmac -j2
 
 brcmfmac43430-sdio.bin: patcher.py patch.elf text.bin $(FUNCTIONS_BIN)
