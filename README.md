@@ -1,4 +1,4 @@
-![NexMon logo](https://dev.seemoo.tu-darmstadt.de/bcm/bcm-rpi3/raw/master/logo/nexmon-rpi3.png)
+![NexMon logo](https://github.com/seemoo-lab/bcm-rpi3/raw/master/logo/nexmon-rpi3.png)
 
 ## What is NexMon?
 
