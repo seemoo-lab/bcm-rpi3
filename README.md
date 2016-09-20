@@ -2,7 +2,7 @@
 
 ## What is NexMon?
 
-NexMon is a firmware patching framework initially build for the BCM4339 WiFi firmware of Nexus 5 smartphones. However, this repository contains firmware patches for the BCM43438 WiFi chip used in the Raspberry Pi 3. It's main intension was to enable monitor mode and frame injection, which is already working quite well. Nevertheless, we also publish many example patches that allow to dive into firmware reverse engineering and firmware patching. Especially, the ability to write firmware patches in C makes it easy to use, also for beginners.
+NexMon is a firmware patching framework initially built for the BCM4339 WiFi firmware of Nexus 5 smartphones. However, this repository contains firmware patches for the BCM43438 WiFi chip used in the Raspberry Pi 3. It's main intention was to enable monitor mode and frame injection, which now works quite well. Nevertheless, we have also published many example patches that allow you to dive into firmware reverse engineering and firmware patching. The ability to write firmware patches in C makes it easy to use, especially for beginners.
 
 ## News
 * We moved to **[GitHub!](https://github.com/seemoo-lab/bcm-rpi3)**
@@ -15,7 +15,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 * A bootable image (Raspbian 8) for the micro SD card (8GB) of your Raspberry Pi 3, including a patched version of **airgrack-ng**:
   * [download](https://docs.google.com/uc?id=0Bxy-sW7-zQXjdm9hamNKbkttZG8&export=download)
-* Everything needed to build the pachtes by yourself
+* Everything needed to build the patches by yourself
 
 ## Steps needed to run the prepared SD card image on your Raspberry Pi 3
 * Login as `root` with the password `nexmon`
