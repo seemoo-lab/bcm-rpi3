@@ -31,6 +31,9 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 * use `modprobe brcmfmac` to load the unmodified driver and firmware
 
 ## Steps to create your own firmware patches
+
+This code is supposed to be **cross-compiled** on a x86 hardware. Compiling this code on the Raspberry Pi 3 itself is not supported.
+
 * `source setup_env.sh`
 * for the monitor mode patch: `cd firmware_patching/monitor_mode/`
 * `make`
@@ -39,6 +42,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 ## Caveats
 * ~~Switching channels does not work~~ it works now, but it needs a patch in the kernel, see 8f4b7501dedf72306c471e4962478b8ffe91d7a8
+* Injection does not work (due to problems with the brcmfmac driver)
 
 ## Read our papers
 
