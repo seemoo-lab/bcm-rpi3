@@ -33,6 +33,9 @@ patch_firmware("../../bootimg_src/firmware/brcmfmac43430-sdio.orig.bin",
 
         ExternalArmPatch(0xa0, "fpb_remap_dest.bin"),
 
+        ExternalArmPatch(getSectionAddr(".text.handle_sdio_xmit_request_hook"), "handle_sdio_xmit_request_hook.bin"),
+        BLPatch(0x3A66, getSectionAddr(".text.handle_sdio_xmit_request_hook")),
+
 	#ExternalArmPatch(getSectionAddr(".text.wlc_recv_hook"), "wlc_recv_hook.bin"),
         #BLPatch(0x1C00E, getSectionAddr(".text.wlc_recv_hook")),
 

@@ -88,7 +88,7 @@ do {                                    \
 /*
 #define brcmf_dbg(level, fmt, ...) \
 do {            \
-    printk("%s:%d:: ", __FUNCTION__, __LINE__);       \
+    printk("lvl: %s at %s:%d:: ", #level, __FUNCTION__, __LINE__);       \
     printk(fmt, ##__VA_ARGS__); \
 } while(0)
 */

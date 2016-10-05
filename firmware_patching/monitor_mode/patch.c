@@ -151,6 +151,46 @@ wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
 	dngl_sendpkt(SDIO_INFO_ADDR, p_new, 2);
 }
 
+void *
+inject_frame(sk_buff *p) {
+    int rtap_len = 0;
+    int data_rate = 0;
+
+    //needed for sending:
+    struct wlc_info *wlc = WLC_INFO_ADDR;
+    void *bsscfg = 0;
+
+    //Radiotap parsing:
+    //struct ieee80211_radiotap_iterator iterator;
+    //struct ieee80211_radiotap_header *rtap_header;
+    //TODO
+
+    // remove bdc header
+    skb_pull(p, 4);
+
+    rtap_len = *((char *)(p->data + 2));
+    //parse radiotap header
+    //TODO
+
+    //remove radiotap header
+    skb_pull(p, rtap_len);
+
+    bsscfg = wlc_bsscfg_find_by_wlcif(wlc, 0);
+
+    //TODO last parameter is the rate, currently fix on 1MBit
+    int ret2 = wlc_sendctl(wlc, p, *(int **)((*((int *)(bsscfg + 0xC))) + 0xC), wlc->band->hwrs_scb, 1, data_rate, 0);
+    printf("wlc_sendctl() ret: %d\n", ret2);
+
+    return 0;
+}
+
+void *
+handle_sdio_xmit_request_hook(void *sdio_hw, struct sk_buff *p) {
+    printf("sdio xmit req hook!\n");
+    return inject_frame(p);
+}
+
+
 int
 wlc_recvdata_hook(void *wlc, void *osh, void *rxh, void *p) {
     return osl_pktfree(osh, p, 0);

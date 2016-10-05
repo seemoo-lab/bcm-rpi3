@@ -673,8 +673,9 @@ static int brcmf_netdev_open(struct net_device *ndev)
 		return -EIO;
 	}
 
+    /* NEXMON: This needs to go for injection to work! */
 	/* Clear, carrier, set when connected or AP mode. */
-	netif_carrier_off(ndev);
+	//netif_carrier_off(ndev);
 	return 0;
 }
 
