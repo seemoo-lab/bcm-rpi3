@@ -3,8 +3,10 @@ OLD_PWD=$(pwd)
 cd $(dirname ${BASH_SOURCE[0]})
 
 if [ -d "$(pwd)/buildtools" ] && [ -d "$(pwd)/firmware_patching" ]; then
- export CC=$(pwd)/buildtools/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
- export CROSS_COMPILE=$(pwd)/buildtools/arm-eabi-4.7/bin/arm-eabi-
+# export CC=$(pwd)/buildtools/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
+ export CC=$(pwd)/buildtools/gcc-arm-none-eabi-5_4-2016q2/bin/arm-none-eabi-
+# export CROSS_COMPILE=$(pwd)/buildtools/arm-eabi-4.7/bin/arm-eabi-
+ export CROSS_COMPILE=$(pwd)/buildtools/gcc-arm-none-eabi-5_4-2016q2/bin/arm-none-eabi-
 
  export ARCH=arm
  export KERNEL=kernel7

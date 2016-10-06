@@ -617,7 +617,7 @@ brcmf_cfg80211_nexmon_set_channel(struct wiphy *wiphy,struct cfg80211_chan_def *
     s32 err = 0;
     u16 chanspec;
 
-    brcmf_err("DEBUG NexMon: brcmf_cfg80211_nexmon_set_channel() called!\n");
+    //brcmf_err("DEBUG NexMon: brcmf_cfg80211_nexmon_set_channel() called!\n");
     chanspec = chandef_to_chanspec(&cfg->d11inf, chandef);
     err = brcmf_fil_iovar_int_set(ifp, "chanspec", chanspec);
     if (err < 0) {

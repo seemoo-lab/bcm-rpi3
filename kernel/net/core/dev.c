@@ -2727,6 +2727,7 @@ struct sk_buff *dev_hard_start_xmit(struct sk_buff *first, struct net_device *de
 	struct sk_buff *skb = first;
 	int rc = NETDEV_TX_OK;
 
+    //printk(KERN_ERR "NEXMON: dev_hard_start_xmit(): ENTER1\n");
 	while (skb) {
 		struct sk_buff *next = skb->next;
 
@@ -2875,6 +2876,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 	bool contended;
 	int rc;
 
+    //printk(KERN_ERR "NEXMON: __dev_xmit_skb(): ENTER1\n");
 	qdisc_pkt_len_init(skb);
 	qdisc_calculate_pkt_len(skb, q);
 	/*
@@ -2890,6 +2892,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 	spin_lock(root_lock);
 	if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
 		kfree_skb(skb);
+        //printk(KERN_ERR "NEXMON: __dev_xmit_skb(): DROP1\n");
 		rc = NET_XMIT_DROP;
 	} else if ((q->flags & TCQ_F_CAN_BYPASS) && !qdisc_qlen(q) &&
 		   qdisc_run_begin(q)) {
@@ -2924,6 +2927,10 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 	spin_unlock(root_lock);
 	if (unlikely(contended))
 		spin_unlock(&q->busylock);
+    if(rc == NET_XMIT_CN) {
+        dump_stack();
+    }
+    //printk(KERN_ERR "NEXMON: __dev_xmit_skb(): LEAVE, rc: %d\n", rc);
 	return rc;
 }
 
@@ -3081,6 +3088,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, void *accel_priv)
 
 	skb_reset_mac_header(skb);
 
+    //printk(KERN_ERR "NEXMON: __dev_queue_xmit(): ENTER1\n");
 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
 		__skb_tstamp_tx(skb, NULL, skb->sk, SCM_TSTAMP_SCHED);
 
@@ -3108,6 +3116,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, void *accel_priv)
 		goto out;
 	}
 #endif
+    //printk(KERN_ERR "NEXMON: __dev_queue_xmit(): ENTER2\n");
 
 	txq = netdev_pick_tx(dev, skb, accel_priv);
 	q = rcu_dereference_bh(txq->qdisc);
@@ -3120,6 +3129,8 @@ static int __dev_queue_xmit(struct sk_buff *skb, void *accel_priv)
 		rc = __dev_xmit_skb(skb, q, dev, txq);
 		goto out;
 	}
+
+    //printk(KERN_ERR "NEXMON: __dev_queue_xmit(): ENTER3\n");
 
 	/* The device has no queue. Common case for software devices:
 	   loopback, all the sorts of tunnels...
@@ -3171,6 +3182,7 @@ recursion_alert:
 
 	rc = -ENETDOWN;
 drop:
+    //printk(KERN_ERR "NEXMON: __dev_queue_xmit(): DROPPED!\n");
 	rcu_read_unlock_bh();
 
 	atomic_long_inc(&dev->tx_dropped);

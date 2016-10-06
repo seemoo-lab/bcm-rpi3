@@ -152,6 +152,7 @@ int sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
 {
 	int ret = NETDEV_TX_BUSY;
 
+    //printk(KERN_ERR "NEXMON: sch_direct_xmit(): ENTER1\n");
 	/* And release qdisc */
 	spin_unlock(root_lock);
 
