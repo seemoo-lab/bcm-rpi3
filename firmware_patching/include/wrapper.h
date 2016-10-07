@@ -73,6 +73,8 @@ extern void *pkt_buf_get_skb(void *osh, unsigned int len); // 0x625C
 extern int printf(const char *format, ...); // 0x803B60
 extern int wf_chspec_malformed(unsigned short chanpsec); // 0x80506C
 extern void wl_monitor(void *a1, void *sts, void *p); // 0x819510
+extern void *wlc_bsscfg_find_by_wlcif(void *wlc, int wlcif); // 0x1CF3E
+extern int wlc_sendctl(void *wlc, sk_buff *p, int *qi, void *scb, unsigned int fifo, unsigned int rate_override, char enq_only); // 0x82DDC4
 extern int wlc_recvdata(void *wlc, void *osh, void *rxh, void *p); // 0x1210C
 extern void *wlc_bmac_mctrl(void *wlc_hw, int mask_1, int val); // 0x8457F4
 extern void wlc_bmac_read_tsf(void *wlc_hw, unsigned int *tsf_l_ptr, unsigned int *tsf_h_ptr); // 0x1BEAC

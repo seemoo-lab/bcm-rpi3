@@ -151,7 +151,7 @@ wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
 	dngl_sendpkt(SDIO_INFO_ADDR, p_new, 2);
 }
 
-void *
+int
 inject_frame(sk_buff *p) {
     int rtap_len = 0;
     int data_rate = 0;
@@ -184,7 +184,7 @@ inject_frame(sk_buff *p) {
     return 0;
 }
 
-void *
+int
 handle_sdio_xmit_request_hook(void *sdio_hw, struct sk_buff *p) {
     printf("sdio xmit req hook!\n");
     return inject_frame(p);

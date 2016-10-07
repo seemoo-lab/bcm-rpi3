@@ -40,9 +40,15 @@ typedef struct sk_buff {
     struct sk_buff *head;        /* 0x04 */
 	void *data;                 /* 0x08 */
 	short len;                  /* 0x0c */
-    int PAD;                    /* 0x0e */
-    int PAD;                    /* 0x12 */
+    short PAD;                  /* 0x0e */
+    int PAD;                    /* 0x10 */
+    short PAD;                  /* 0x14 */
     struct sk_buff *prev;       /* 0x16 */
+    short PAD;                  /* 0x1a */
+    int PAD;                    /* 0x1c */
+    int PAD;                    /* 0x20 */
+    int PAD;                    /* 0x24 */
+    void *scb;                  /* 0x28 */
 } __attribute__((packed)) sk_buff;
 
 struct tunables {
@@ -136,14 +142,16 @@ struct wlcband {
     void *pi;                           /* 0x010 */
     char abgphy_encore;                 /* 0x014 */
     char gmode;                         /* 0x015 */
-    int hwrs_scb;                       /* 0x016 */
-    int defrateset;                     /* 0x01A */
-    int rspec_override;                 /* 0x01E */
-    int mrspec_override;                /* 0x022 */
-    char band_stf_ss_mode;              /* 0x026 */
-    char band_stf_stbc_tx;              /* 0x027 */
-    int hw_rateset;                     /* 0x028 */
-    char basic_rate;                    /* 0x02C */
+    char PAD;
+    char PAD;
+    void *hwrs_scb;                     /* CHECKED */
+    int defrateset;
+    int rspec_override;
+    int mrspec_override;
+    char band_stf_ss_mode;
+    char band_stf_stbc_tx;
+    int hw_rateset;
+    char basic_rate;
 } __attribute__((packed));
 
 struct wlc_info {
