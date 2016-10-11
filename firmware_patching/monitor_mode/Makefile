@@ -1,6 +1,7 @@
 #SRCS=$(wildcard *.c) ucode_compressed.c
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
+Q=@
 
 NEXMON_CHIP=CHIP_VER_BCM43438
 NEXMON_FW_VERSION=FW_VER_7_45_41_26_r640327
@@ -57,8 +58,8 @@ patch.elf: patch.ld patch.o wrapper.o $(OBJS)
 brcmfmac43430-sdio.bin: patch.elf $(ORIG_FW)
 	cp $(ORIG_FW) $@
 	$(CC)objcopy -O binary -j .text.patch $< section.generated.bin && dd if=section.generated.bin of=$@ bs=1 conv=notrunc seek=$$((0x12110))
-	make -f patch.generated.mk
-	make -f flashpatch.generated.mk
+	make -f patch.generated.mk Q=$(Q)
+	make -f flashpatch.generated.mk Q=$(Q)
 
 #fw_bcmdhd.complete.bin : fw_bcmdhd.bin ../../bootimg_src/firmware/rom.bin
 #	dd if=../../bootimg_src/firmware/rom.bin of=$@ bs=1

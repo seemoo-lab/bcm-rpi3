@@ -27,6 +27,10 @@ struct wl_rxsts {
     uint8 rssi;
 } __attribute__((packed));
 
+struct wlc_txh_info {
+    uint8 PAD[80];
+} __attribute__((packed));
+
 struct osl_info {
 	unsigned int pktalloced;
 	int PAD[1];
@@ -40,9 +44,15 @@ typedef struct sk_buff {
     struct sk_buff *head;        /* 0x04 */
 	void *data;                 /* 0x08 */
 	short len;                  /* 0x0c */
-    int PAD;                    /* 0x0e */
-    int PAD;                    /* 0x12 */
+    short PAD;                  /* 0x0e */
+    int PAD;                    /* 0x10 */
+    short PAD;                  /* 0x14 */
     struct sk_buff *prev;       /* 0x16 */
+    short PAD;                  /* 0x1a */
+    int PAD;                    /* 0x1c */
+    int PAD;                    /* 0x20 */
+    int PAD;                    /* 0x24 */
+    void *scb;                  /* 0x28 */
 } __attribute__((packed)) sk_buff;
 
 struct tunables {

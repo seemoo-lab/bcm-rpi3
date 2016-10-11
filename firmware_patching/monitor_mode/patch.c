@@ -52,7 +52,7 @@
 #include <wrapper.h>	// wrapper definitions for functions that already exist in the firmware
 #include <structs.h>	// structures that are used by the code in the firmware
 #include <patcher.h>
-//#include "../include/helper.h"
+//#include <helper.h>
 #include "ieee80211_radiotap.h"
 #include "radiotap.h"
 #include "d11.h"
@@ -381,21 +381,19 @@ wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
 void *
 inject_frame(sk_buff *p) {
     int rtap_len = 0;
-    int data_rate = 0;
 
     //needed for sending:
     struct wlc_info *wlc = WLC_INFO_ADDR;
-    void *bsscfg = 0;
-
+    int short_preamble = 0;
+    struct wlc_txh_info txh = {0};
+    int data_rate = 0;
     //Radiotap parsing:
     struct ieee80211_radiotap_iterator iterator;
     struct ieee80211_radiotap_header *rtap_header;
 
-    // remove bdc header
-    skb_pull(p, 4);
-
     //parse radiotap header
     rtap_len = *((char *)(p->data + 2));
+
     rtap_header = (struct ieee80211_radiotap_header *) p->data;
 
     int ret = ieee80211_radiotap_iterator_init(&iterator, rtap_header, rtap_len);
@@ -417,25 +415,33 @@ inject_frame(sk_buff *p) {
                 break;
         }
     }
-
+    
     //remove radiotap header
     skb_pull(p, rtap_len);
 
-    bsscfg = wlc_bsscfg_find_by_wlcif(wlc, 0);
+    //inject frame without using the queue
+    if(wlc->band->hwrs_scb) {
+        wlc_d11hdrs(wlc, p, wlc->band->hwrs_scb, short_preamble, 0, 1, 1, 0, 0, data_rate);
+        
+        p->scb = wlc->band->hwrs_scb;
 
-    //TODO last parameter is the rate, currently fix on 1MBit
-    wlc_sendctl(wlc, p, *(int **)((*((int *)(bsscfg + 0xC))) + 0xC), wlc->band->hwrs_scb, 1, data_rate, 0);
-    //printf("wlc_sendctl() ret: %d\n", ret2);
+        wlc_get_txh_info(wlc, p, &txh);
+
+        wlc_txfifo(wlc, 1, p, &txh, 1, 1);
+    } else {
+        printf("no scb found, discarding packet!\n");
+        osl_pktfree(wlc->osh, p, 0);
+    }
 
     return 0;
 }
 
 void *
-handle_sdio_xmit_request_hook(void *sdio_hw, struct sk_buff *p) {
-    //printf("sdio xmit req hook!\n");
-    return inject_frame(p);
+wlc_sdio_hook(int a1, int a2, struct sk_buff *p)
+{
+    inject_frame(p);
+    return 0;
 }
-
 
 int
 wlc_recvdata_hook(void *wlc, void *osh, void *rxh, void *p) {
@@ -445,5 +451,5 @@ wlc_recvdata_hook(void *wlc, void *osh, void *rxh, void *p) {
 __attribute__((at(0x1210C, "", CHIP_VER_BCM43438, FW_VER_ALL)))
 BPatch(wlc_recvdata_hook, wlc_recvdata_hook);
 
-__attribute__((at(0x3A66, "", CHIP_VER_BCM43438, FW_VER_ALL)))
-BLPatch(handle_sdio_xmit_request_hook, handle_sdio_xmit_request_hook);
+__attribute__((at(0x7EF8, "", CHIP_VER_BCM43438, FW_VER_ALL)))
+BPatch(wlc_sdio_hook, wlc_sdio_hook);

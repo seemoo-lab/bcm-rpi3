@@ -68,6 +68,12 @@
     #define AT(CHIPVER, FWVER, ADDR)
 #endif
 
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x9F38)
+int
+wlc_d11hdrs(void *wlc, void *p, void *scb, int short_preamble, int frag, unsigned int nfrag, unsigned int queue, int next_frag_len, int key, int rate_override)
+RETURN_DUMMY
+
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x4E44)
 void *
 dma_rx(void *di)
@@ -103,14 +109,39 @@ int
 osl_pktfree(void *a1, void *a2, int a3)
 RETURN_DUMMY
 
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x62A4)
+int
+osl_pktfree_plus4(void *a1, void *a2, int a3)
+RETURN_DUMMY
+
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x625C)
 void *
 pkt_buf_get_skb(void *osh, unsigned int len)
 RETURN_DUMMY
 
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x6260)
+void *
+pkt_buf_get_skb_plus4(void *osh, unsigned int len)
+RETURN_DUMMY
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x804B64)
+void *
+pktq_mdeq(int a1, int a2, int *a3)
+RETURN_DUMMY
+
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x803B60)
 int
 printf(const char *format, ...)
+RETURN_DUMMY
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x8081F0)
+unsigned int
+udelay(int a1)
+RETURN_DUMMY
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0xF4A8)
+int
+wlc_txfifo(void *wlc, int fifo, void *p, void *txh, unsigned int commit, int txpktpend)
 RETURN_DUMMY
 
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x80506C)
@@ -154,6 +185,12 @@ int
 wlc_sendctl(void *wlc, void *p, void *qi, void *scb, unsigned int fifo, unsigned int rate_override, char enq_only)
 RETURN_DUMMY
 
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x9DEA)
+void *
+wlc_get_txh_info(void *wlc, void *p, void *txh)
+RETURN_DUMMY
+
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x82ABEC)
 int
 wlc_iovar_op(void *wlc, char *varname, void *params, int p_len, void *arg, int len, char set, void *wlcif)
@@ -172,6 +209,11 @@ RETURN_DUMMY
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x301F8)
 void *
 wlc_scb_lookup(void *wlc, void *bsscfg, char *ea, int bandunit)
+RETURN_DUMMY
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x81F80C)
+int
+wlc_pdu_txhdr(void *wlc, void *p, void *scb)
 RETURN_DUMMY
 
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x44EC0)

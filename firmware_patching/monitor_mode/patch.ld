@@ -2,7 +2,7 @@ MEMORY
 {
     ram : ORIGIN = 0x0, LENGTH = 512K
     rom : ORIGIN = 0x800000, LENGTH = 640K
-    /* override wlc_recvdata */
+    /* override wlc_recvdata + 4 */
     patch : ORIGIN = 0x12110, LENGTH = 2296
 }
 
