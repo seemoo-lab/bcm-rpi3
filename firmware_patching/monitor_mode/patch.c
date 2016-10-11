@@ -58,13 +58,6 @@
 #include "d11.h"
 #include "brcm.h"
 
-struct brcmf_proto_bcdc_header {
-	unsigned char flags;
-	unsigned char priority;
-	unsigned char flags2;
-	unsigned char data_offset;
-};
-
 struct bdc_radiotap_header {
     struct brcmf_proto_bcdc_header bdc;
     struct ieee80211_radiotap_header radiotap;
@@ -378,7 +371,7 @@ wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
 	dngl_sendpkt(SDIO_INFO_ADDR, p_new, 2);
 }
 
-void *
+int
 inject_frame(sk_buff *p) {
     int rtap_len = 0;
 
@@ -436,7 +429,7 @@ inject_frame(sk_buff *p) {
     return 0;
 }
 
-void *
+int
 wlc_sdio_hook(int a1, int a2, struct sk_buff *p)
 {
     inject_frame(p);
