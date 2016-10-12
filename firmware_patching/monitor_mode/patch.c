@@ -58,6 +58,13 @@
 #include "d11.h"
 #include "brcm.h"
 
+struct brcmf_proto_bcdc_header {
+	unsigned char flags;
+	unsigned char priority;
+	unsigned char flags2;
+	unsigned char data_offset;
+};
+
 struct bdc_radiotap_header {
     struct brcmf_proto_bcdc_header bdc;
     struct ieee80211_radiotap_header radiotap;
