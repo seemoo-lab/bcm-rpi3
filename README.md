@@ -14,7 +14,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 ## What this Repo contains
 
 * A bootable image (Raspbian 8) for the micro SD card (8GB) of your Raspberry Pi 3, including a patched version of **airgrack-ng**:
-  * see our latest [release](https://github.com/seemoo-lab/bcm-rpi3/releases/latest), the tar.gz contains the dd iamge
+  * see our latest [release](https://github.com/seemoo-lab/bcm-rpi3/releases/latest), the .tar.gz contains the dd image
 * Everything needed to build the patches by yourself
 
 ## Steps needed to run the prepared SD card image on your Raspberry Pi 3
@@ -45,7 +45,6 @@ This code is supposed to be **cross-compiled** on a x86 hardware. Compiling this
 
 ## Caveats
 * ~~Switching channels does not work~~ it works now, but it needs a patch in the kernel, see 8f4b7501dedf72306c471e4962478b8ffe91d7a8
-* Injection does not work (due to problems with the brcmfmac driver)
 
 ## Read our papers
 
