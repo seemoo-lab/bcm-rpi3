@@ -14,14 +14,17 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 ## What this Repo contains
 
 * A bootable image (Raspbian 8) for the micro SD card (8GB) of your Raspberry Pi 3, including a patched version of **airgrack-ng**:
-  * [download](https://docs.google.com/uc?id=0Bxy-sW7-zQXjdm9hamNKbkttZG8&export=download)
+  * see our latest [release](https://github.com/seemoo-lab/bcm-rpi3/releases/latest), the tar.gz contains the dd iamge
 * Everything needed to build the patches by yourself
 
 ## Steps needed to run the prepared SD card image on your Raspberry Pi 3
+* unpack the dd image
+* copy the image to your SD card, e.g.: `dd if=nexmon_rpi_12-10-2016.dd of=/dev/mmcblk0 bs=1M` **note:** the sd card device (in this example mmcblk0) may change depending on your setup
 * Login as `root` with the password `nexmon`
 
 ### Monitor Mode
 * `insmod /root/brcmfmac.ko`
+* `ifconfig wlan0 up`
 * thats it, try using tcpdump: `tcpdump -i wlan0 -s0`
 * or airodump-ng: `airodump-ng wlan0`
 
