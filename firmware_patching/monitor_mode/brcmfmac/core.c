@@ -38,6 +38,7 @@
 #include "common.h"
 /* NEXMON */
 #include "nexmon_procfs.h"
+#include "nexmon_ioctls.h"
 
 MODULE_AUTHOR("Broadcom Corporation");
 MODULE_DESCRIPTION("Broadcom 802.11 wireless LAN fullmac driver.");
@@ -679,14 +680,64 @@ static int brcmf_netdev_open(struct net_device *ndev)
 	return 0;
 }
 
+static int nexmon_ioctl_handling(struct net_device *net, struct ifreq *ifr, int cmd);
+
 static const struct net_device_ops brcmf_netdev_ops_pri = {
 	.ndo_open = brcmf_netdev_open,
 	.ndo_stop = brcmf_netdev_stop,
 	.ndo_get_stats = brcmf_netdev_get_stats,
+    .ndo_do_ioctl = nexmon_ioctl_handling,
 	.ndo_start_xmit = brcmf_netdev_start_xmit,
 	.ndo_set_mac_address = brcmf_netdev_set_mac_address,
 	.ndo_set_rx_mode = brcmf_netdev_set_multicast_list
 };
+
+static int
+nexmon_ioctl_handling(struct net_device *ndev, struct ifreq *ifr, int cmd)
+{
+    nex_ioctl_t ioc;
+    void *buf = NULL;
+    int buflen = 0;
+    int action_set = 0;
+    struct brcmf_if *ifp = netdev_priv(ndev);
+
+    brcmf_err("NEXMON: %s enter\n", __FUNCTION__);
+    if(copy_from_user(&ioc, ifr->ifr_data, sizeof(nex_ioctl_t))) {
+        brcmf_err("NEXMON: %s: error on copy ifr_data\n", __FUNCTION__);
+        return -1;
+    }
+
+    buflen = ioc.len;
+
+    if(ioc.buf) {
+        if(!(buf = kmalloc(buflen + 1, GFP_KERNEL))) {
+            brcmf_err("NEXMON: %s: error on kmalloc\n", __FUNCTION__);
+            return -1;
+        }
+        if(copy_from_user(buf, ioc.buf, buflen)) {
+            brcmf_err("NEXMON: %s: error on copy buf\n", __FUNCTION__);
+            return -1;
+        }
+    }
+    
+    action_set = ioc.set;
+    /* set something */
+    if(action_set) {
+        brcmf_fil_cmd_data_set(ifp, ioc.cmd, buf, buflen);
+    }
+    /* get something */ 
+    else {
+        brcmf_fil_cmd_data_get(ifp, ioc.cmd, buf, buflen);
+    }
+
+    if(copy_to_user(ioc.buf, buf, buflen)) {
+        brcmf_err("NEXMON: %s: error on copy TO user\n", __FUNCTION__);
+    }
+
+    kfree(buf);
+
+    return 0;
+}
 
 int brcmf_net_attach(struct brcmf_if *ifp, bool rtnl_locked)
 {
