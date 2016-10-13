@@ -1,4 +1,5 @@
 #ifndef NEXMON_PROCFS_H
+#define NEXMON_PROCFS_H
 
 #include <linux/kernel.h>
 #include <linux/proc_fs.h>

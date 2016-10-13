@@ -1,4 +1,5 @@
 #ifndef NEXMON_IOCTLS_H
+#define NEXMON_IOCTLS_H
 
 /* see include/dhdioctl.h in bcmdhd driver */
 typedef struct nex_ioctl {
