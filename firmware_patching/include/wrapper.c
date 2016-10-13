@@ -139,6 +139,11 @@ unsigned int
 udelay(int a1)
 RETURN_DUMMY
 
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x81A2D4)
+int
+wlc_ioctl(void *wlc, int cmd, void *arg, int len, void *wlc_if)
+RETURN_DUMMY
+
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0xF4A8)
 int
 wlc_txfifo(void *wlc, int fifo, void *p, void *txh, unsigned int commit, int txpktpend)
