@@ -15,8 +15,8 @@ all: brcmfmac/brcmfmac.ko brcmfmac43430-sdio.bin
 #include ucode_compression_code.mk
 
 brcmfmac/brcmfmac.ko: check-nexmon-setup-env
-#	make -C ../../kernel/ bcm2709_defconfig
-#	make -C ../../kernel/ -j4
+	make -C ../../kernel/ bcm2709_defconfig
+	make -C ../../kernel/ -j4
 	make -C ../../kernel/ M=$$PWD/brcmfmac -j2
 
 %.o: %.c ../include/*.h
@@ -50,8 +50,8 @@ wrapper.o: ../include/wrapper.c
 	make -C ../wrapper \
 		NEXMON_CHIP=$(NEXMON_CHIP) \
 		NEXMON_FW_VERSION=$(NEXMON_FW_VERSION) \
-		WRAPPER_LD_FILE=$(NEXMON_FIRMWARE_PATCHING)/monitor_mode/$(basename $@).generated.ld \
-		WRAPPER_OBJ_FILE=$(NEXMON_FIRMWARE_PATCHING)/monitor_mode/$@
+		WRAPPER_LD_FILE=$(NEXMON_FIRMWARE_PATCHING)/nexmon/$(basename $@).generated.ld \
+		WRAPPER_OBJ_FILE=$(NEXMON_FIRMWARE_PATCHING)/nexmon/$@
 
 patch.elf: patch.ld patch.o wrapper.o $(OBJS)
 	$(CC)ld -T $< -o $@ --gc-sections --print-gc-sections -M
