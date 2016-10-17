@@ -1,7 +1,0 @@
-.*
-*.o
-!/.gitignore
-Module.symvers
-brcmfmac.ko
-brcmfmac.mod.c
-modules.order
