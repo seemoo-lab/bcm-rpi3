@@ -1494,6 +1494,30 @@ struct udp_header {
     uint16 checksum;
 } __attribute__((packed));
 
+typedef void (*to_fun_t)(void *arg);
+
+typedef struct _ctimeout {
+    struct _ctimeout *next;
+    uint32 ms;
+    to_fun_t fun;
+    void *arg;
+    bool expired;
+} ctimeout_t;
+
+
+struct hndrte_timer
+{
+    uint32  *context;       /* first field so address of context is timer struct ptr */
+    void    *data;
+    void    (*mainfn)(struct hndrte_timer *);
+    void    (*auxfn)(void *context);
+    ctimeout_t t;
+    int interval;
+    int set;
+    int periodic;
+    bool    _freedone;
+} __attribute__((packed));
+
 /*
 struct bdc_ethernet_ip_udp_header {
     struct bdc_header bdc;

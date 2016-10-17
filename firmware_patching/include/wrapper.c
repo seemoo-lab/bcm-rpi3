@@ -94,6 +94,16 @@ void *
 handle_sdio_xmit_request(void *sdio_hw, void *p)
 RETURN_DUMMY
 
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x807B24)
+void *
+hndrte_add_timer(void *t, int ms, int periodic) 
+RETURN_DUMMY
+
+AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x807CB4)
+void *
+hndrte_init_timer(void *context, void *data, void (*mainfn)(struct hndrte_timer *), void (*auxfn)(void *))
+RETURN_DUMMY
+
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x2360)
 int
 memcpy(void *dst, void *src, int len)
