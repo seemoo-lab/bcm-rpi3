@@ -430,7 +430,7 @@ inject_frame(sk_buff *p) {
         wlc_txfifo(wlc, 1, p, &txh, 1, 1);
     } else {
         printf("no scb found, discarding packet!\n");
-        osl_pktfree(wlc->osh, p, 0);
+        pkt_buf_free_skb(wlc->osh, p, 0);
     }
 
     return 0;
@@ -445,7 +445,7 @@ wlc_sdio_hook(int a1, int a2, struct sk_buff *p)
 
 int
 wlc_recvdata_hook(void *wlc, void *osh, void *rxh, void *p) {
-    return osl_pktfree(osh, p, 0);
+    return pkt_buf_free_skb(osh, p, 0);
 }
 
 __attribute__((at(0x1210C, "", CHIP_VER_BCM43438, FW_VER_ALL)))

@@ -106,12 +106,12 @@ RETURN_DUMMY
 
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x62A0)
 int
-osl_pktfree(void *a1, void *a2, int a3)
+pkt_buf_free_skb(void *a1, void *a2, int a3)
 RETURN_DUMMY
 
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x62A4)
 int
-osl_pktfree_plus4(void *a1, void *a2, int a3)
+pkt_buf_free_skb_plus4(void *a1, void *a2, int a3)
 RETURN_DUMMY
 
 AT(CHIP_VER_BCM43438, FW_VER_ALL, 0x625C)
