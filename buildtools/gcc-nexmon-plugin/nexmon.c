@@ -12,20 +12,13 @@ int plugin_is_GPL_compatible = 1;
 
 static const char *objfile = "patch.o";
 static const char *fwfile = "fw_bcmdhd.bin";
-static const char *ldfile = "/dev/null";
-static const char *makefile = "/dev/null";
+static const char *prefile = "nexmon.generated.pre";
 static const char *targetregion = NULL;
-static unsigned int ramstart = 0x0;
+static unsigned int ramstart = 0x180000;
 static unsigned int chipver = 0;
 static unsigned int fwver = 0;
-//static unsigned int fp_config_base = 0x1800;
-static unsigned int fp_config_base = 0x5A3A8;
-static unsigned int fp_data_base = 0x1000;
-static unsigned int fp_config_end = fp_config_base;
-static unsigned int fp_data_end = fp_data_base;
-static bool fp_active = false;
 
-static FILE *ld_fp, *make_fp;
+static FILE *pre_fp;
 
 static struct attribute_spec user_attr =
 {
@@ -38,8 +31,6 @@ static struct attribute_spec user_attr =
 	.handler = handle_nexmon_place_at_attribute,
 	.affects_type_identity = false,
 };
-
-char *str1 = (char *) "";
 
 static tree
 handle_nexmon_place_at_attribute(tree *node, tree name, tree args, int flags, bool *no_add_attr)
@@ -101,21 +92,13 @@ handle_nexmon_place_at_attribute(tree *node, tree name, tree args, int flags, bo
 
 	if ((chipver == 0 || chipver_local == 0 || chipver == chipver_local) && (fwver == 0 || fwver_local == 0 || fwver == fwver_local)) {
 		if (is_region) {
-			asprintf(&str1, "%s.text.%s : { KEEP(%s (.*.%s)) } >%s\n", str1, region, objfile, decl_name, region);
+			fprintf(pre_fp, "%s REGION %s %s\n", region, objfile, decl_name);
 		} else if (is_flashpatch) {
-			fp_active = true;
-			fprintf(ld_fp, ".text.%s 0x%08x : { KEEP(%s (.*.%s)) }\n", decl_name, addr, objfile, decl_name);
-			fprintf(make_fp, "\t$(Q)$(CC)objcopy -O binary -j .text.%s $< section.generated.bin && dd if=section.generated.bin of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", decl_name, fp_data_end - ramstart);
-			fprintf(make_fp, "\t$(Q)printf %08x%08x%08x | xxd -r -p | dd of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", htonl(addr), htonl(4), htonl(fp_data_end), fp_config_end - ramstart);
-			fprintf(make_fp, "\t$(Q)printf \"  FLASHPATCH %s @ 0x%08x\\n\"\n", decl_name, addr);
-			fp_config_end += 12;
-			fp_data_end += 8;
+			fprintf(pre_fp, "0x%08x FLASHPATCH %s %s\n", addr, objfile, decl_name);
 		} else if (is_dummy) {
-			fprintf(ld_fp, ".text.dummy.%s 0x%08x : { %s (.*.%s) }\n", decl_name, addr, objfile, decl_name);
+			fprintf(pre_fp, "0x%08x DUMMY %s %s\n", addr, objfile, decl_name);
 		} else {
-			fprintf(ld_fp, ".text.%s 0x%08x : { KEEP(%s (.*.%s)) }\n", decl_name, addr, objfile, decl_name);
-			fprintf(make_fp, "\t$(Q)$(CC)objcopy -O binary -j .text.%s $< section.generated.bin && dd if=section.generated.bin of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", decl_name, addr - ramstart);
-			fprintf(make_fp, "\t$(Q)printf \"  PATCH %s @ 0x%08x\\n\"\n", decl_name, addr);
+			fprintf(pre_fp, "0x%08x PATCH %s %s\n", addr, objfile, decl_name);
 		}
 	}
 
@@ -139,8 +122,10 @@ handle_pragma_targetregion(cpp_reader *dummy)
       	return;
     }
 
- 	if (TREE_STRING_LENGTH (message) > 1)
+ 	if (TREE_STRING_LENGTH (message) > 1) {
 		targetregion = TREE_STRING_POINTER (message);
+		fprintf(pre_fp, "%s TARGETREGION %s\n", targetregion, objfile);
+ 	}
 }
 
 static void 
@@ -152,28 +137,7 @@ register_pragmas(void *event_data, void *data)
 static void
 handle_plugin_finish(void *event_data, void *data)
 {
-	if (fp_active) {
-		fprintf(make_fp, "\t$(Q)printf %08x | xxd -r -p | dd of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", htonl(fp_data_end), 0x38E3C - ramstart);
-		fprintf(make_fp, "\t$(Q)printf \"  PATCH fp_data_end @ 0x%08x\\n\"\n", 0x38E3C);
-		fprintf(make_fp, "\t$(Q)printf %08x | xxd -r -p | dd of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", htonl(fp_config_base), 0x3AC2C - ramstart);
-		fprintf(make_fp, "\t$(Q)printf \"  PATCH fp_config_base @ 0x%08x\\n\"\n", 0x3AC2C);
-		fprintf(make_fp, "\t$(Q)printf %08x | xxd -r -p | dd of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", htonl(fp_config_end), 0x3AC28 - ramstart);
-		fprintf(make_fp, "\t$(Q)printf \"  PATCH fp_config_end @ 0x%08x\\n\"\n", 0x3AC28);
-		fprintf(make_fp, "\t$(Q)printf %08x | xxd -r -p | dd of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", htonl(fp_config_base), 0x3A9B4 - ramstart);
-		fprintf(make_fp, "\t$(Q)printf \"  PATCH fp_config_base @ 0x%08x\\n\"\n", 0x3A9B4);
-		fprintf(make_fp, "\t$(Q)printf %08x | xxd -r -p | dd of=$@ bs=1 conv=notrunc status=none seek=$$((0x%08x))\n", htonl(fp_config_end), 0x3A9B0 - ramstart);
-		fprintf(make_fp, "\t$(Q)printf \"  PATCH fp_config_end @ 0x%08x\\n\"\n", 0x3A9B0);
-	}
-
-	fprintf(make_fp, "\nFORCE:\n");
-	
-	fprintf(ld_fp, "%s", str1);
-
-	if (targetregion)
-		fprintf(ld_fp, ".text.%s : { %s (.text .text.* .data .data.* .bss .bss.* .rodata .rodata.*) } >%s\n", targetregion, objfile, targetregion);
-
-	fclose(ld_fp);
-	fclose(make_fp);
+	fclose(pre_fp);
 }
 
 int
@@ -183,10 +147,8 @@ plugin_init(struct plugin_name_args *info, struct plugin_gcc_version *ver)
 	for (i = 0; i < info->argc; i++) {
 		if (!strcmp(info->argv[i].key, "objfile")) {
 			objfile = info->argv[i].value;
-		} else if (!strcmp(info->argv[i].key, "ldfile")) {
-			ldfile = info->argv[i].value;
-		} else if (!strcmp(info->argv[i].key, "makefile")) {
-			makefile = info->argv[i].value;
+		} else if (!strcmp(info->argv[i].key, "prefile")) {
+			prefile = info->argv[i].value;
 		} else if (!strcmp(info->argv[i].key, "fwfile")) {
 			fwfile = info->argv[i].value;
 		} else if (!strcmp(info->argv[i].key, "ramstart")) {
@@ -198,24 +160,12 @@ plugin_init(struct plugin_name_args *info, struct plugin_gcc_version *ver)
 		}
 	}
 
-	unlink(ldfile);
-	unlink(makefile);
+	pre_fp = fopen(prefile, "a");
 
-	ld_fp = fopen(ldfile, "a");
-
-	if (!ld_fp) {
-		fprintf(stderr, "gcc_nexmon_plugin: Linker file not writeable! (error)\n");
+	if (!pre_fp) {
+		fprintf(stderr, "gcc_nexmon_plugin: Pre file not writeable! (error)\n");
 		return -1;
 	}
-
-	make_fp = fopen(makefile, "a");
-
-	if (!make_fp) {
-		fprintf(stderr, "gcc_nexmon_plugin: Make file not writeable! (error)\n");
-		return -1;
-	}
-
-	fprintf(make_fp, "%s: patch.elf FORCE\n", fwfile);
 
 	register_callback("nexmon", PLUGIN_ATTRIBUTES, register_attributes, NULL);
 	register_callback("nexmon", PLUGIN_PRAGMAS, register_pragmas, NULL);

@@ -47,6 +47,8 @@
  *                                                                         *
  **************************************************************************/
 
+#pragma NEXMON targetregion "patch"
+
 #include <firmware_version.h>
 #include <bcm43438.h>
 #include <wrapper.h>	// wrapper definitions for functions that already exist in the firmware
