@@ -35,13 +35,22 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 ## Steps to create your own firmware patches
 
-This code is supposed to be **cross-compiled** on a x86 hardware. Compiling this code on the Raspberry Pi 3 itself is not supported.
+### Using a x68 based computer
 
 * `source setup_env.sh`
 * for the monitor mode patch: `cd firmware_patching/monitor_mode/`
 * `make`
 * copy the `brcmfmac/brcmfmac.ko` to the `/root/` directory of your Raspberry Pi
 * copy the `brcmfmac43430-sdio.bin` to `/lib/firmware/brcm/` directory of your Raspberry Pi
+
+### Using your Raspberry Pi
+
+* `sudo apt install raspberrypi-kernel-headers `
+* `source setup_env.sh`
+* for the monitor mode patch: `cd firmware_patching/nexmon/`
+* `make rpi3`
+* copy the `brcmfmac/brcmfmac.ko` to the `/root/` directory of your Raspberry Pi
+* download the prebuilt `brcmfmac43430-sdio.bin` from the download page and copy it to `/lib/firmware/brcm/` directory of your Raspberry Pi
 
 ## Caveats
 * ~~Switching channels does not work~~ it works now, but it needs a patch in the kernel, see 8f4b7501dedf72306c471e4962478b8ffe91d7a8
