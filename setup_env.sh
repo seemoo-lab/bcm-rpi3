@@ -5,7 +5,7 @@ cd $(dirname ${BASH_SOURCE[0]})
 
 if [ -d "$(pwd)/buildtools" ] && [ -d "$(pwd)/firmware_patching" ] && [ $ARCH != "armv7l" ]; then
  # Compiler for the NexMon firmware
- export CC=$(pwd)/buildtools/gcc-arm-none-eabi-5_4-2016q2/bin/arm-none-eabi-
+ export CC=$(pwd)/buildtools/gcc-arm-none-eabi-5_4-2016q2_x86/bin/arm-none-eabi-
  # Compiler for the RPI3 kernel
  export CROSS_COMPILE=$(pwd)/buildtools/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf-
 
@@ -22,6 +22,8 @@ fi
 
 if [ $ARCH == "armv7l" ]; then
  echo "Raspberry Pi detected, disabling cross-compilation."
+ export CC=$(pwd)/buildtools/gcc-arm-none-eabi-5_4-2016q2_arm/bin/arm-none-eabi-
+ export NEXMON_FIRMWARE_PATCHING=$(pwd)/firmware_patching
  export NEXMON_SETUP_ENV=1
  export NEXMON_ROOT=$(pwd)
 fi

@@ -1,7 +1,8 @@
-CC=../../buildtools/gcc-arm-none-eabi-5_4-2016q2/bin/arm-none-eabi-
+#CC=../../buildtools/gcc-arm-none-eabi-5_4-2016q2/bin/arm-none-eabi-
+CC=../../buildtools/gcc-arm-none-eabi-5_4-2016q2-20160622/install-native/bin/arm-none-eabi-
 
-NEXMON_CHIP=CHIP_VER_BCM4339
-NEXMON_FW_VERSION=FW_VER_6_37_32_RC23_34_40_r581243
+NEXMON_CHIP=CHIP_VER_BCM43438
+NEXMON_FW_VERSION=FW_VER_7_45_41_26_r640327
 
 WRAPPER_PRE_FILE=wrapper.generated.pre
 WRAPPER_OBJ_FILE=$(NEXMON_FIRMWARE_PATCHING)/wrapper/wrapper.o
