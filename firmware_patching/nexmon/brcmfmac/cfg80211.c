@@ -651,6 +651,7 @@ static struct wireless_dev *brcmf_cfg80211_add_iface(struct wiphy *wiphy,
 	case NL80211_IFTYPE_WDS:
 	case NL80211_IFTYPE_MONITOR:
 	case NL80211_IFTYPE_MESH_POINT:
+		brcmf_err("%s: EOPNOTSUPP\n", __FUNCTION__);
 		return ERR_PTR(-EOPNOTSUPP);
 	case NL80211_IFTYPE_AP:
 		wdev = brcmf_ap_add_vif(wiphy, name, flags, params);
@@ -778,6 +779,7 @@ int brcmf_cfg80211_del_iface(struct wiphy *wiphy, struct wireless_dev *wdev)
 	case NL80211_IFTYPE_WDS:
 	case NL80211_IFTYPE_MONITOR:
 	case NL80211_IFTYPE_MESH_POINT:
+		brcmf_err("%s: EOPNOTSUPP\n", __FUNCTION__);
 		return -EOPNOTSUPP;
 	case NL80211_IFTYPE_P2P_CLIENT:
 	case NL80211_IFTYPE_P2P_GO:
@@ -787,6 +789,7 @@ int brcmf_cfg80211_del_iface(struct wiphy *wiphy, struct wireless_dev *wdev)
 	default:
 		return -EINVAL;
 	}
+    brcmf_err("%s 2: EOPNOTSUPP\n", __FUNCTION__);
 	return -EOPNOTSUPP;
 }
 
@@ -829,10 +832,12 @@ brcmf_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
 		 * it is. If the user tries this then unloading of driver might
 		 * fail/lock.
 		 */
-		if (cfg->p2p.p2pdev_dynamically)
+		if (cfg->p2p.p2pdev_dynamically) {
+            brcmf_err("%s: EOPNOTSUPP\n", __FUNCTION__);
 			return -EOPNOTSUPP;
-		else
+        } else {
 			return 0;
+        }
 	}
 	err = brcmf_vif_change_validate(wiphy_to_cfg(wiphy), vif, type);
 	if (err) {
@@ -841,6 +846,9 @@ brcmf_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
 	}
 	switch (type) {
 	case NL80211_IFTYPE_MONITOR:
+        /* NEXMON */
+        infra = 1;
+        break;
 	case NL80211_IFTYPE_WDS:
 		brcmf_err("type (%d) : currently we do not support this type\n",
 			  type);
@@ -1326,6 +1334,7 @@ brcmf_cfg80211_join_ibss(struct wiphy *wiphy, struct net_device *ndev,
 		brcmf_dbg(CONN, "SSID: %s\n", params->ssid);
 	else {
 		brcmf_dbg(CONN, "SSID: NULL, Not supported\n");
+		brcmf_err("%s: EOPNOTSUPP\n", __FUNCTION__);
 		return -EOPNOTSUPP;
 	}
 
@@ -2359,6 +2368,7 @@ brcmf_cfg80211_config_default_mgmt_key(struct wiphy *wiphy,
 {
 	brcmf_dbg(INFO, "Not supported\n");
 
+    brcmf_err("%s: EOPNOTSUPP\n", __FUNCTION__);
 	return -EOPNOTSUPP;
 }
 
@@ -2568,6 +2578,7 @@ brcmf_cfg80211_dump_station(struct wiphy *wiphy, struct net_device *ndev,
 			brcmf_err("BRCMF_C_GET_ASSOCLIST unsupported, err=%d\n",
 				  err);
 			cfg->assoclist.count = 0;
+            brcmf_err("%s: EOPNOTSUPP\n", __FUNCTION__);
 			return -EOPNOTSUPP;
 		}
 	}
