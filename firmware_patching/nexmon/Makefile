@@ -30,10 +30,10 @@ endif
 
 brcmfmac/brcmfmac.ko: check-nexmon-setup-env
 	make -C ../../buildtools/gcc-nexmon-plugin/
-	make -C ../../kernel/ bcm2709_defconfig
-	make -C ../../kernel/ -j4
 ifneq ($(shell uname -m),armv7l)
 	echo "Building on x86"
+	make -C ../../kernel/ bcm2709_defconfig
+	make -C ../../kernel/ -j4
 	make -C ../../kernel/ M=$$PWD/brcmfmac -j2
 else
 	echo "Building on RPI3"
@@ -150,6 +150,10 @@ clean-firmware: FORCE
 	make -C ../wrapper clean
 
 clean: clean-firmware
+ifneq ($(shell uname -m),armv7l)
 	make -C ../../kernel/ M=$$PWD/brcmfmac clean
+else
+	make -C /lib/modules/$(shell uname -r)/build M=$$PWD/brcmfmac clean
+endif
 
 FORCE:
