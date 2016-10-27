@@ -37,20 +37,26 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 ### Using a x86 based computer
 
-* `source setup_env.sh`
-* for the monitor mode patch: `cd firmware_patching/monitor_mode/`
+* clone our repository
+* set the environment in the repository folder: `source setup_env.sh`
+* for the monitor mode patch: `cd firmware_patching/nexmon/`
 * `make`
 * copy the `brcmfmac/brcmfmac.ko` to the `/root/` directory of your Raspberry Pi
 * copy the `brcmfmac43430-sdio.bin` to `/lib/firmware/brcm/` directory of your Raspberry Pi
 
 ### Using your Raspberry Pi
 
-* `sudo apt install raspberrypi-kernel-headers `
-* `source setup_env.sh`
+* clone our repository
+* upgrade your raspbian installation: `apt-get update && apt-get upgrade`
+* `sudo apt install raspberrypi-kernel-headers libgmp3-dev gawk`
+* remove wpa_supplicant for better control over the WiFi interface: `apt-get remove wpasupplicant`
+* set the environment in the repository folder: `source setup_env.sh`
 * for the monitor mode patch: `cd firmware_patching/nexmon/`
 * `make`
-* copy the `brcmfmac/brcmfmac.ko` to the `/root/` directory of your Raspberry Pi
-* copy the `brcmfmac43430-sdio.bin` to `/lib/firmware/brcm/` directory of your Raspberry Pi
+* unload the original driver module: `rmmod brcmfmac`
+* load the modified driver module: `insmod brcmfmac/brcmfmac.ko`
+* copy the `brcmfmac43430-sdio.bin` to `/lib/firmware/brcm/` directory of your Raspberry Pi (make a copy of the original file beforehand)
+* set the interface up: `ifconfig wlan0 up`
 
 ## Caveats
 
