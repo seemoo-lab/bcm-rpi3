@@ -1,7 +1,11 @@
-CC=../../buildtools/gcc-arm-none-eabi-5_4-2016q2/bin/arm-none-eabi-
+ifneq ($(shell uname -m),armv7l)
+CC=../../buildtools/gcc-arm-none-eabi-5_4-2016q2_x86/bin/arm-none-eabi-
+else
+CC=../../buildtools/gcc-arm-none-eabi-5_4-2016q2_arm/bin/arm-none-eabi-
+endif
 
-NEXMON_CHIP=CHIP_VER_BCM4339
-NEXMON_FW_VERSION=FW_VER_6_37_32_RC23_34_40_r581243
+NEXMON_CHIP=CHIP_VER_BCM43438
+NEXMON_FW_VERSION=FW_VER_7_45_41_26_r640327
 
 WRAPPER_PRE_FILE=wrapper.generated.pre
 WRAPPER_OBJ_FILE=$(NEXMON_FIRMWARE_PATCHING)/wrapper/wrapper.o

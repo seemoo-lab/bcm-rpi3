@@ -829,10 +829,11 @@ brcmf_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
 		 * it is. If the user tries this then unloading of driver might
 		 * fail/lock.
 		 */
-		if (cfg->p2p.p2pdev_dynamically)
+		if (cfg->p2p.p2pdev_dynamically) {
 			return -EOPNOTSUPP;
-		else
+        } else {
 			return 0;
+        }
 	}
 	err = brcmf_vif_change_validate(wiphy_to_cfg(wiphy), vif, type);
 	if (err) {
@@ -841,10 +842,13 @@ brcmf_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
 	}
 	switch (type) {
 	case NL80211_IFTYPE_MONITOR:
+        /* NEXMON */
+        infra = 1;
+        break;
 	case NL80211_IFTYPE_WDS:
 		brcmf_err("type (%d) : currently we do not support this type\n",
 			  type);
-		return -EOPNOTSUPP;
+        return -EOPNOTSUPP;
 	case NL80211_IFTYPE_ADHOC:
 		infra = 0;
 		break;
