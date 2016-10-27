@@ -53,7 +53,6 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 * copy the `brcmfmac43430-sdio.bin` to `/lib/firmware/brcm/` directory of your Raspberry Pi
 
 ## Caveats
-* ~~Switching channels does not work~~ it works now, but it needs a patch in the kernel, see 8f4b7501dedf72306c471e4962478b8ffe91d7a8
 
 ## Read our papers
 
