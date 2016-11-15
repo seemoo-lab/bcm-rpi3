@@ -21,6 +21,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 * unpack the dd image
 * copy the image to your SD card, e.g.: `dd if=nexmon_rpi_12-10-2016.dd of=/dev/mmcblk0 bs=1M` **note:** the sd card device (in this example mmcblk0) may change depending on your setup
 * Login as `root` with the password `nexmon`
+* Change the keymap if necessary: `dpkg-reconfigure keyboard-configuration` and `shutdown -r now` / `invoke-rc.d keyboard-setup start` to reload the keymap.
 
 ### Monitor Mode
 * `insmod /root/brcmfmac.ko`
