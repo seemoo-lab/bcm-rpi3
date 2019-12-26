@@ -14,7 +14,7 @@ Our software may damage your hardware and may void your hardware’s warranty! Y
 
 ## What this Repo contains
 
-* A bootable image (Raspbian 8) for the micro SD card (8GB) of your Raspberry Pi 3, including a patched version of **airgrack-ng**:
+* A bootable image (Raspbian 8) for the micro SD card (8GB) of your Raspberry Pi 3, including a patched version of **aircrack-ng**:
   * see our latest [release](https://github.com/seemoo-lab/bcm-rpi3/releases/latest), the .tar.gz contains the dd image
 * Everything needed to build the patches by yourself
 
